@@ -1,12 +1,3 @@
-// Animal Hierarchy
-// Description: Create a hierarchy where Animal is the superclass, and Dog, Cat, and Bird are subclasses. Each subclass has a unique behavior.
-// Tasks:
-// Define a superclass Animal with attributes name and age, and a method makeSound().
-// Define subclasses Dog, Cat, and Bird, each with a unique implementation of makeSound().
-// Goal: Learn basic inheritance, method overriding, and polymorphism with simple classes.
-
-
-
 package OOPS_Inheritance.Assisted_Problems_Inheritance;
 
 public class Animal_Hierarchy {
@@ -23,4 +14,48 @@ public class Animal_Hierarchy {
         System.out.println("Animal is making sound");
     }
 
+    static class Dog extends Animal_Hierarchy {
+        Dog(String name, int age) {
+            super(name, age);
+        }
+
+        @Override
+        void makeSound() {
+            System.out.println(name + " the Dog says: Woof Woof");
+        }
+    }
+
+    static class Cat extends Animal_Hierarchy {
+        Cat(String name, int age) {
+            super(name, age);
+        }
+
+        @Override
+        void makeSound() {
+            System.out.println(name + " the Cat says: Meow Meow");
+        }
+    }
+
+    static class Bird extends Animal_Hierarchy {
+        Bird(String name, int age) {
+            super(name, age);
+        }
+
+        @Override
+        void makeSound() {
+            System.out.println(name + " the Bird says: Chirp Chirp");
+        }
+    }
+
+    public static void main(String[] args) {
+        Animal_Hierarchy[] animals = {
+            new Dog("Buddy", 3),
+            new Cat("Whiskers", 2),
+            new Bird("Tweety", 1)
+        };
+
+        for (Animal_Hierarchy animal : animals) {
+            animal.makeSound();
+        }
+    }
 }
