@@ -10,6 +10,7 @@
 - [Social.java](LinkedList/Social.java): Social network features using linked lists.
 - [StudentRecord.java](LinkedList/StudentRecord.java): Manages student records using linked lists.
 
+
 ## StacksAndQueues
 
 - [CircularTour.java](StacksAndQueues/CircularTour.java): Solves the circular tour (petrol pump) problem using queues.
@@ -23,3 +24,31 @@
 - [SortStackRecursion.java](StacksAndQueues/SortStackRecursion.java): Sorts a stack using recursion.
 - [StockSpan.java](StacksAndQueues/StockSpan.java): Solves the stock span problem using stacks.
 - [TwoSumProblem.java](StacksAndQueues/TwoSumProblem.java): Finds two numbers that sum to a target value.
+
+## LinearBinarySearch
+
+- [ByteToCharStream.java](LinearBinarySearch/ByteToCharStream.java): Demonstrates byte to char stream conversion.
+- [CompareBuffer.java](LinearBinarySearch/CompareBuffer.java): Compares buffer contents for equality.
+- [ConcatenateString.java](LinearBinarySearch/ConcatenateString.java): Concatenates strings efficiently.
+- [countWordInfile.java](LinearBinarySearch/countWordInfile.java): Counts words in a file.
+- [FindPeak.java](LinearBinarySearch/FindPeak.java): Finds a peak element in an array.
+- [FirstLastOccurence.java](LinearBinarySearch/FirstLastOccurence.java): Finds first and last occurrence of an element.
+- [FirstNegative.java](LinearBinarySearch/FirstNegative.java): Finds the first negative number in an array.
+- [InputToFile.java](LinearBinarySearch/InputToFile.java): Demonstrates input to file operations.
+- [LineByLineFileReader.java](LinearBinarySearch/LineByLineFileReader.java): Reads a file line by line.
+- [RemoveDuplicate.java](LinearBinarySearch/RemoveDuplicate.java): Removes duplicate elements from an array.
+- [ReverseString.java](LinearBinarySearch/ReverseString.java): Reverses a string.
+- [RotationPoint.java](LinearBinarySearch/RotationPoint.java): Finds the rotation point in a rotated array.
+- [Search2Dmatrix.java](LinearBinarySearch/Search2Dmatrix.java): Searches for an element in a 2D matrix.
+- [SearchChallenge.java](LinearBinarySearch/SearchChallenge.java): Various search challenges and problems.
+- [SearchWord.java](LinearBinarySearch/SearchWord.java): Searches for a word in a file or array.
+
+## SortingAlgorithms
+
+- [BubbleSort.java](SortingAlgorithms/BubbleSort.java): Implements bubble sort algorithm.
+- [CountingSort.java](SortingAlgorithms/CountingSort.java): Implements counting sort algorithm.
+- [HeapSort.java](SortingAlgorithms/HeapSort.java): Implements heap sort algorithm.
+- [InsertionSort.java](SortingAlgorithms/InsertionSort.java): Implements insertion sort algorithm.
+- [MergeSort.java](SortingAlgorithms/MergeSort.java): Implements merge sort algorithm.
+- [QuickSort.java](SortingAlgorithms/QuickSort.java): Implements quick sort algorithm.
+- [SelectionSort.java](SortingAlgorithms/SelectionSort.java): Implements selection sort algorithm.
