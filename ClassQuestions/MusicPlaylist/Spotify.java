@@ -1,7 +1,7 @@
 package ClassQuestions.MusicPlaylist;
 
 public class Spotify extends Navigation {
-    private String play;
+    private String song;
     private Queue current;
 
     public Spotify(String play){
@@ -49,6 +49,7 @@ public class Spotify extends Navigation {
     while (temp.prev != null) {
         temp = temp.prev;
     }
+    temp=temp.next;
 
     System.out.println("\n Your Playlist:");
     while (temp != null) {

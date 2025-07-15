@@ -1,6 +1,4 @@
 package ClassQuestions.MusicPlaylist;
-
-
 public class Main {
     public static void main(String[] args) {
         Spotify musicPlaylist = new Spotify("play");
