@@ -2,6 +2,7 @@ package Generics;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 // Abstract class WarehouseItem
 abstract class WarehouseItem {
@@ -90,6 +91,57 @@ class Storage<T extends WarehouseItem> {
     public static void displayItems(List<? extends WarehouseItem> items) {
         for (WarehouseItem item : items) {
             System.out.println(item.getDescription());
+        }
+    }
+}
+
+public class SmartWarehouseManagementSystem {
+    public static void main(String[] args) {
+        Storage<Electronics> electronicsStorage = new Storage<>();
+        Storage<Groceries> groceriesStorage = new Storage<>();
+        Storage<Furniture> furnitureStorage = new Storage<>();
+
+        // Preload some data
+        electronicsStorage.addItem(new Electronics("Laptop", "Dell"));
+        electronicsStorage.addItem(new Electronics("Smartphone", "Samsung"));
+
+        groceriesStorage.addItem(new Groceries("Milk", "2024-05-01"));
+        groceriesStorage.addItem(new Groceries("Bread", "2024-04-15"));
+
+        furnitureStorage.addItem(new Furniture("Chair", "Wood"));
+        furnitureStorage.addItem(new Furniture("Table", "Metal"));
+
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("\nSmart Warehouse Management System");
+            System.out.println("1. Display Electronics");
+            System.out.println("2. Display Groceries");
+            System.out.println("3. Display Furniture");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // consume newline
+
+            switch (choice) {
+                case 1:
+                    System.out.println("Electronics in Storage:");
+                    Storage.displayItems(electronicsStorage.getItems());
+                    break;
+                case 2:
+                    System.out.println("Groceries in Storage:");
+                    Storage.displayItems(groceriesStorage.getItems());
+                    break;
+                case 3:
+                    System.out.println("Furniture in Storage:");
+                    Storage.displayItems(furnitureStorage.getItems());
+                    break;
+                case 4:
+                    System.out.println("Exiting...");
+                    scanner.close();
+                    return;
+                default:
+                    System.out.println("Invalid choice. Try again.");
+            }
         }
     }
 }
