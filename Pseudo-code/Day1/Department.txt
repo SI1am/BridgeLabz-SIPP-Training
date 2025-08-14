@@ -1,0 +1,16 @@
+
+CLASS Employee
+    ATTRIBUTES: name, department
+    CONSTRUCTOR(name, department)
+        SET this.name = name
+        SET this.department = department
+
+MAIN
+    CREATE ArrayList<Employee> employees
+    ADD new Employee("Alice", "HR")
+    ADD new Employee("Bob", "IT")
+    ADD new Employee("Charlie", "HR")
+
+    FILTER employees where department == "HR"
+    PRINT all HR employees' names
+

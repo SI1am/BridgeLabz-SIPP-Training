@@ -1,0 +1,19 @@
+CREATE Stack<String> undoStack
+SET currentText = ""
+
+FUNCTION typeText(newText)
+    PUSH currentText into undoStack
+    APPEND newText to currentText
+
+FUNCTION undo()
+    IF undoStack is NOT empty
+        SET currentText = POP from undoStack
+    ELSE
+        PRINT "Nothing to undo"
+
+MAIN
+    typeText("Babooraoo")
+    typeText(" Kya hua?")
+    PRINT currentText   
+    undo()
+    PRINT currentText   

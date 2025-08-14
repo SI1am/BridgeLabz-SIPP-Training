@@ -1,0 +1,17 @@
+
+CREATE HashMap<String, Integer> studentScores
+
+FUNCTION addScore(name, score)
+    PUT name -> score into studentScores
+
+FUNCTION displayHighestScorer()
+    FIND entry in studentScores with maximum value (score)
+    PRINT "Highest scorer: " + name + " with score " + score
+
+MAIN
+    addScore("Aman", 95)
+    addScore("Boby", 87)
+    addScore("Chaman", 99)
+    displayHighestScorer()
+
+

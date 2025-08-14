@@ -1,0 +1,23 @@
+CREATE Queue normalQueue
+CREATE Queue emergencyQueue
+
+FUNCTION addCustomer(name, priority)
+    IF priority == "emergency"
+        ENQUEUE name into emergencyQueue
+    ELSE
+        ENQUEUE name into normalQueue
+
+FUNCTION serveCustomer()
+    IF emergencyQueue is NOT empty
+        DEQUEUE from emergencyQueue and PRINT "Serving emergency: " + name
+    ELSE IF normalQueue is NOT empty
+        DEQUEUE from normalQueue and PRINT "Serving normal: " + name
+    ELSE
+        PRINT "No customers waiting"
+
+MAIN
+    addCustomer("Paneer", "normal")
+    addCustomer("Pakoda", "emergency")
+    serveCustomer()
+
+

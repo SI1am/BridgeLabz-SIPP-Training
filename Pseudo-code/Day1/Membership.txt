@@ -1,0 +1,24 @@
+CLASS Member
+    ATTRIBUTES: name, id, membershipDate
+    CONSTRUCTOR(name, id, membershipDate)
+        SET this.name = name
+        SET this.id = id
+        SET this.membershipDate = membershipDate
+    METHOD isValid(currentDate)
+        IF difference between currentDate and membershipDate <= 365 days
+            RETURN true
+        ELSE
+            RETURN false
+
+MAIN
+    CREATE Member m = new Member("Amit", 101, "2024-01-01")
+    CREATE Member m2 = new Member("pradeep", 1023, "2023-08-06")
+    IF m.isValid("2024-12-31") == true
+        PRINT "Membership is valid"
+    ELSE
+        PRINT "Membership expired"
+        
+    IF m2.isValid("2024-12-31") == true
+        PRINT "Membership is valid"
+    ELSE
+        PRINT "Membership expired"
