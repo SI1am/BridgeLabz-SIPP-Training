@@ -1,0 +1,15 @@
+// Pseudocode: Simple Word Counter (Map, Stream)
+Input: text
+words = split text into words (remove punctuation, to lowercase)
+Initialize Map<String, Integer> wordCount
+For each word in words
+    If word in wordCount
+        wordCount[word]++
+    Else
+        wordCount[word] = 1
+// Using Stream API (conceptual)
+wordCount = words.stream().collect(groupingBy(word, counting))
+// Output
+Print wordCount
+Find word with max count
+Print top/rare words

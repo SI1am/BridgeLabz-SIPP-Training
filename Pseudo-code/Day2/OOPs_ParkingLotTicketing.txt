@@ -1,0 +1,35 @@
+// Pseudocode: Parking Lot Ticketing System (OOPs)
+Class Vehicle
+    Attributes:
+        vehicleNumber
+        entryTime
+    Method calculateFee(exitTime):
+        // To be overridden
+
+Class Car extends Vehicle
+    Method calculateFee(exitTime):
+        hours = ceil((exitTime - entryTime) in hours)
+        fee = 50 + (hours - 1) * 30 if hours > 1 else 50
+        Return fee
+
+Class Bike extends Vehicle
+    Method calculateFee(exitTime):
+        hours = ceil((exitTime - entryTime) in hours)
+        fee = 20 + (hours - 1) * 10 if hours > 1 else 20
+        Return fee
+
+Class Truck extends Vehicle
+    Method calculateFee(exitTime):
+        hours = ceil((exitTime - entryTime) in hours)
+        fee = 100 + (hours - 1) * 50 if hours > 1 else 100
+        Return fee
+
+// Example Run
+Car KA05AB1234 enters at 10:00
+Bike KA05XY7890 enters at 11:15
+Truck KA09TR5566 enters at 09:30
+// Exits
+Car exits at 13:30 → Car.calculateFee(13:30)
+Bike exits at 12:00 → Bike.calculateFee(12:00)
+Truck exits at 14:00 → Truck.calculateFee(14:00)
+Print ticket details and fee

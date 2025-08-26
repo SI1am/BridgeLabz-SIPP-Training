@@ -1,0 +1,10 @@
+// Pseudocode: Bus Route Navigator (LinkedList)
+Initialize LinkedList route
+Add stops: Depot → Main Street → City Mall → Hospital → Airport
+Insert "University Stop" after "City Mall"
+Remove "Hospital" from route
+Search for "Airport" in route
+If found
+    Print "Airport is in the route"
+Else
+    Print "Airport not found"
