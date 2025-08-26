@@ -1,0 +1,31 @@
+// Pseudocode: Smart Farming System
+// Detailed Pseudocode: Smart Farming System
+// Step 1: Define abstract class Crop
+Abstract Class Crop
+    Method getWaterRequirement():
+        // Returns a string describing water needs
+    Method harvest():
+        // Prints harvesting message
+
+// Step 2: Implement Rice subclass
+Class Rice extends Crop
+    Method getWaterRequirement():
+        Return "High water needed for Rice"
+    Method harvest():
+        Print "Harvesting rice..."
+
+// Step 3: Implement Wheat subclass
+Class Wheat extends Crop
+    Method getWaterRequirement():
+        Return "Moderate water needed for Wheat"
+    Method harvest():
+        Print "Harvesting wheat..."
+
+// Step 4: Simulate farming operations
+Create riceCrop as Rice
+Print "Rice water requirement:", riceCrop.getWaterRequirement()
+riceCrop.harvest()
+
+Create wheatCrop as Wheat
+Print "Wheat water requirement:", wheatCrop.getWaterRequirement()
+wheatCrop.harvest()

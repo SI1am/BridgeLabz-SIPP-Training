@@ -1,0 +1,26 @@
+
+// Detailed Pseudocode: Job Scheduler (Priority Queue)
+// Step 1: Define Job class
+Class Job
+    Attributes: jobId, deadline, processingTime
+    Method getPriority():
+        // Lower value means higher priority (earlier deadline or shorter job)
+        Return deadline - processingTime
+
+// Step 2: Initialize the job queue
+Initialize PriorityQueue<Job> jobQueue (sorted by getPriority())
+
+// Step 3: Add jobs to the queue
+Create Job job1 with jobId=1, deadline=10, processingTime=3
+Create Job job2 with jobId=2, deadline=8, processingTime=2
+Create Job job3 with jobId=3, deadline=12, processingTime=4
+Add job1, job2, job3 to jobQueue
+
+// Step 4: Schedule jobs based on priority
+While jobQueue is not empty
+    job = jobQueue.poll() // Get job with highest priority
+    Print "Processing Job", job.jobId, "Deadline:", job.deadline, "Processing Time:", job.processingTime
+    // Simulate job processing (could be a wait or actual work)
+    Print "Job", job.jobId, "completed."
+
+// Example: Add jobs with different deadlines and processing times, process in order of priority

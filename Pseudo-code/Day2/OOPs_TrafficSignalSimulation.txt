@@ -1,0 +1,40 @@
+
+
+// Detailed Pseudocode: Traffic Signal Simulation
+// Step 1: Define the traffic light states
+Enum TrafficLight { RED, YELLOW, GREEN }
+
+// Step 2: Create a controller class to manage the signal
+Class TrafficSignalController
+    Attribute: currentLight (TrafficLight)
+    Attribute: intervals (Map<TrafficLight, Integer>) // seconds for each light
+
+    Method initialize():
+        Set currentLight = RED
+        Set intervals[RED] = 30
+        Set intervals[GREEN] = 25
+        Set intervals[YELLOW] = 5
+
+    Method switchLight():
+        If currentLight == RED
+            currentLight = GREEN
+        Else if currentLight == GREEN
+            currentLight = YELLOW
+        Else if currentLight == YELLOW
+            currentLight = RED
+
+    Method runSimulation(cycles):
+        For i = 1 to cycles
+            For each light in [RED, GREEN, YELLOW]
+                Set currentLight = light
+                Print "Light is", currentLight
+                For t = intervals[currentLight] down to 1
+                    Print t, "seconds remaining for", currentLight
+                    Wait 1 second
+                switchLight()
+        Print "Simulation complete."
+
+// Example Run
+Create controller
+controller.initialize()
+controller.runSimulation(2) // Run 2 full cycles

@@ -1,0 +1,25 @@
+
+// Detailed Pseudocode: Online Store Cart System (List, Generics)
+// Step 1: Define Item class
+Class Item
+    Attributes: name, price
+
+// Step 2: Initialize the shopping cart
+Initialize List<Item> cart
+
+// Step 3: Add items to the cart
+Create Item item1 with name="Shirt", price=500
+Create Item item2 with name="Jeans", price=1200
+Create Item item3 with name="Shoes", price=2000
+Add item1, item2, item3 to cart
+
+// Step 4: Calculate total price using a generic method
+Generic method calculateTotalPrice(List<T extends Item>):
+    total = 0
+    For each item in list
+        total = total + item.price
+    Return total
+
+// Step 5: Print total price
+totalPrice = calculateTotalPrice(cart)
+Print "Total price of items in cart:", totalPrice

@@ -1,0 +1,31 @@
+
+// Detailed Pseudocode: Online Quiz Timer (Circular Array)
+Input: n (number of questions)
+Input: timeAllowed[] (array of time allowed for each question)
+Input: warningThreshold (seconds before end to trigger warning)
+
+Initialize circular array timeSlots[n]
+For i = 0 to n-1
+    timeSlots[i] = timeAllowed[i]
+
+Set currentQuestion = 0
+While currentQuestion < n
+    Set timeLeft = timeSlots[currentQuestion]
+    While timeLeft > 0
+        Wait 1 second
+        timeLeft = timeLeft - 1
+        If timeLeft == warningThreshold
+            Print "Warning: Only", warningThreshold, "seconds left for Question", currentQuestion+1
+        If timeLeft == 0
+            Print "Time up for Question", currentQuestion+1
+            Break
+    // Move to next question in circular fashion
+    currentQuestion = (currentQuestion + 1) % n
+    If currentQuestion == 0
+        Print "Quiz cycle completed."
+        Break
+
+// Example:
+// n = 5, timeAllowed = [30, 30, 30, 30, 30], warningThreshold = 5
+// For each question, timer counts down from 30, warning at 5s, moves to next question when time is up.
+// Example: 5 questions, 30s each, warning at 5s left

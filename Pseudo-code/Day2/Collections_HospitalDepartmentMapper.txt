@@ -1,0 +1,23 @@
+
+// Detailed Pseudocode: Hospital Department Mapper (Map<String, List<Doctor>>)
+// Step 1: Define Doctor class
+Class Doctor
+    Attributes: name, specialization
+
+// Step 2: Initialize the department map
+Initialize Map<String, List<Doctor>> departmentMap
+
+// Step 3: Add doctors to departments
+Create Doctor d1 with name="Dr. Mehta", specialization="Cardiologist"
+Create Doctor d2 with name="Dr. Sharma", specialization="Neurologist"
+Create Doctor d3 with name="Dr. Ritu", specialization="Pediatrician"
+Add d1 to departmentMap["Cardiology"]
+Add d2 to departmentMap["Neurology"]
+Add d3 to departmentMap["Pediatrics"]
+
+// Step 4: Filter and print doctors by specialization
+Input: specializationToFind = "Cardiologist"
+For each department in departmentMap
+    For each doctor in departmentMap[department]
+        If doctor.specialization == specializationToFind
+            Print doctor.name, "in department", department
