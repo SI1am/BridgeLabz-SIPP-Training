@@ -1,0 +1,21 @@
+// Detailed Pseudocode: Maze Solver Bot (Recursion, Backtracking)
+// Step 1: Represent the maze as a 2D grid
+Input: maze[n][m] (2D array, 0=path, 1=wall)
+Input: start (x, y), end (x, y)
+
+// Step 2: Recursive function to solve maze
+Function solveMaze(x, y, path):
+    If (x, y) is out of bounds or maze[x][y] == 1 or (x, y) in path
+        Return False
+    Add (x, y) to path
+    If (x, y) == end
+        Print "Path found:", path
+        Return True
+    For each direction (up, down, left, right)
+        If solveMaze(nextX, nextY, path) returns True
+            Return True
+    Remove (x, y) from path // Backtrack
+    Return False
+
+// Step 3: Start solving
+Call solveMaze(start.x, start.y, empty path)

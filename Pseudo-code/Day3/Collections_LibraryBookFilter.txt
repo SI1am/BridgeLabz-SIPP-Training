@@ -1,0 +1,18 @@
+// Detailed Pseudocode: Library Book Filter (Streams, Lambdas)
+// Step 1: Define Book class
+Class Book
+    Attributes: title, author, year, rating
+
+// Step 2: Initialize list of books
+Initialize List<Book> books
+Add Book objects to books
+
+// Step 3: Filter books using Stream API
+filteredBooks = books.stream()
+    .filter(book -> book.year > 2015)
+    .filter(book -> book.rating > 4.5)
+    .collect(toList())
+
+// Step 4: Print filtered books
+For each book in filteredBooks
+    Print book.title, book.author, book.year, book.rating

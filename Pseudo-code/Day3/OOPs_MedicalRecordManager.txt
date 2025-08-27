@@ -1,0 +1,27 @@
+// Detailed Pseudocode: Medical Record Manager (Interfaces, Polymorphism)
+// Step 1: Define interfaces
+Interface Searchable
+    Method search(criteria)
+Interface Printable
+    Method print()
+
+// Step 2: Define different report types implementing interfaces
+Class LabReport implements Searchable, Printable
+    Attributes: reportId, patientName, testResults
+    Method search(criteria):
+        // Search logic for lab report
+    Method print():
+        Print "Lab Report for", patientName
+
+Class Prescription implements Searchable, Printable
+    Attributes: prescriptionId, patientName, medicines
+    Method search(criteria):
+        // Search logic for prescription
+    Method print():
+        Print "Prescription for", patientName
+
+// Step 3: Use polymorphism
+Create List<Printable> reports
+Add LabReport and Prescription objects to reports
+For each report in reports
+    report.print()

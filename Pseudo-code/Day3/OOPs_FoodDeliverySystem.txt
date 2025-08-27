@@ -1,0 +1,29 @@
+// Detailed Pseudocode: Food Delivery System (Composition)
+// Step 1: Define Customer, Restaurant, DeliveryBoy classes
+Class Customer
+    Attributes: name, address, phone
+Class Restaurant
+    Attributes: name, location, menu
+Class DeliveryBoy
+    Attributes: name, id, phone
+
+// Step 2: Define Order class using composition
+Class Order
+    Attributes:
+        customer (Customer)
+        restaurant (Restaurant)
+        deliveryBoy (DeliveryBoy)
+        items (List of food items)
+        totalAmount
+    Method placeOrder():
+        Print "Order placed by", customer.name, "from", restaurant.name
+        Print "Delivery assigned to", deliveryBoy.name
+        Print "Items:", items
+        Print "Total Amount:", totalAmount
+
+// Step 3: Simulate placing an order
+Create Customer c1
+Create Restaurant r1
+Create DeliveryBoy d1
+Create Order o1 with c1, r1, d1, items, totalAmount
+Call o1.placeOrder()

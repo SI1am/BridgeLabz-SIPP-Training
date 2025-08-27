@@ -1,0 +1,29 @@
+// Detailed Pseudocode: Payment Processor (Generics)
+// Step 1: Define payment types
+Class UPI
+    Attributes: upiId, amount, merchantName
+Class Card
+    Attributes: cardNumber, cvv, expiryDate, amount
+Class NetBanking
+    Attributes: bankName, accountNumber, amount
+
+// Step 2: Define generic Transaction<T> class
+Class Transaction<T>
+    Attribute: details (T)
+    Method processPayment():
+        If details is UPI
+            Print "Payment of", details.amount, "via UPI successful for", details.merchantName
+        Else if details is Card
+            Print "Payment of", details.amount, "via Card ending", last4(details.cardNumber), "successful for", details.merchantName
+        Else if details is NetBanking
+            Print "Payment of", details.amount, "via NetBanking (", details.bankName, ") successful."
+    Method getTransactionDetails():
+        Print details
+
+// Step 3: Example usage
+Create Transaction<UPI> t1 with UPI("user@upi", 1200, "Amazon")
+t1.processPayment()
+Create Transaction<Card> t2 with Card("1234-5678-9876-5432", "123", "12/27", 5000)
+t2.processPayment()
+Create Transaction<NetBanking> t3 with NetBanking("HDFC", "00112233", 8000)
+t3.processPayment()

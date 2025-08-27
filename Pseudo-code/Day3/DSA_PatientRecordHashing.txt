@@ -1,0 +1,27 @@
+// Detailed Pseudocode: Patient Record Hashing (HashMap)
+// Step 1: Define Patient class
+Class Patient
+    Attributes: patientId, name, age, diagnosis
+
+// Step 2: Initialize HashMap
+Initialize HashMap<patientId, Patient> patientMap
+
+// Step 3: Add, retrieve, update, delete operations
+Method addPatient(patient):
+    patientMap[patient.patientId] = patient
+Method getPatient(patientId):
+    Return patientMap[patientId]
+Method updatePatient(patientId, newDiagnosis):
+    If patientId in patientMap
+        patientMap[patientId].diagnosis = newDiagnosis
+Method deletePatient(patientId):
+    If patientId in patientMap
+        Remove patientMap[patientId]
+
+// Step 4: Example usage
+Create Patient p1, p2
+addPatient(p1)
+addPatient(p2)
+getPatient(p1.patientId)
+updatePatient(p2.patientId, "Recovered")
+deletePatient(p1.patientId)
