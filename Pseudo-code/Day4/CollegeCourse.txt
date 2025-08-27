@@ -1,0 +1,44 @@
+CLASS Course
+    ATTRIBUTES:
+        courseId
+        courseName
+
+CLASS Student
+    ATTRIBUTES:
+        studentId
+        studentName
+
+CLASS CollegeRegistration
+    ATTRIBUTE:
+        registrations = Map<Course, List<Student>>
+
+    METHOD register(course, student)
+        IF course not in registrations
+            registrations[course] = new empty List<Student>
+        registrations[course].add(student)
+
+    METHOD display()
+        FOR each entry in registrations
+            course = entry.key
+            studentList = entry.value
+            PRINT "Course: " + course.courseName
+            FOR each student in studentList
+                PRINT "   Student: " + student.studentName
+
+MAIN:
+    CREATE regSystem = new CollegeRegistration()
+
+    c1 = new Course("CSE101", "DSA")
+    c2 = new Course("CSE102", "AI")
+
+    s1 = new Student("101", "Alice")
+    s2 = new Student("102", "Bob")
+    s3 = new Student("103", "Charlie")
+
+    regSystem.register(c1, s1)
+    regSystem.register(c1, s2)
+    regSystem.register(c2, s3)
+
+    regSystem.display()
+    END MAIN
+END CLASS

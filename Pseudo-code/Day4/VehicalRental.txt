@@ -1,0 +1,34 @@
+INTERFACE Rentable
+    METHOD rent(days)
+    METHOD returnVehicle()
+
+ABSTRACT CLASS Vehicle IMPLEMENTS Rentable
+    ATTRIBUTES:
+        vehicleId
+        brand
+        model
+        rentPricePerDay
+        isRented = false
+
+    ABSTRACT METHOD calculateRent(days)
+
+CLASS Car EXTENDS Vehicle
+    METHOD calculateRent(days)
+        RETURN days * rentPricePerDay
+
+CLASS Bike EXTENDS Vehicle
+    METHOD calculateRent(days)
+        RETURN days * rentPricePerDay * 0.8  // discount for bikes
+
+FACTORY CLASS VehicleFactory
+    METHOD getVehicle(type)
+        IF type == "Car"
+            RETURN new Car()
+        ELSE IF type == "Bike"
+            RETURN new Bike()
+
+MAIN:
+    factory = new VehicleFactory()
+    v1 = factory.getVehicle("Car")
+    cost = v1.calculateRent(5)
+    PRINT cost

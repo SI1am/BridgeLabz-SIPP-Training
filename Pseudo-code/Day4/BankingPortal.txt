@@ -1,0 +1,51 @@
+CLASS Account
+    ATTRIBUTES:
+        accountNumber
+        holderName
+        balance
+
+    METHODS:
+        deposit(amount)
+            balance = balance + amount
+
+        withdraw(amount)   // base rule (to be overridden)
+            IF balance >= amount
+                balance = balance - amount
+            ELSE
+                PRINT "Insufficient funds"
+
+        displayDetails()
+            PRINT accountNumber, holderName, balance
+
+CLASS Saving EXTENDS Account
+    ATTRIBUTES:
+        withdrawalLimit = 20000
+
+    METHODS:
+        withdraw(amount)
+            IF amount > withdrawalLimit
+                PRINT "Exceeds saving account withdrawal limit"
+            ELSE IF balance >= amount
+                balance = balance - amount
+            ELSE
+                PRINT "Insufficient funds"
+
+CLASS Current EXTENDS Account
+    ATTRIBUTES:
+        overdraftLimit = 5000
+
+    METHODS:
+        withdraw(amount)
+            IF balance + overdraftLimit >= amount
+                balance = balance - amount
+            ELSE
+                PRINT "Exceeds overdraft facility"
+
+MAIN:
+    CREATE account1 = new Saving()
+    account1.deposit(10000)
+    account1.withdraw(25000)  // Exceeds limit
+
+    CREATE account2 = new Current()
+    account2.deposit(5000)
+    account2.withdraw(9000)   // Allowed due to overdraft

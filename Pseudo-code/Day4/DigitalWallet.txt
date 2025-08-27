@@ -1,0 +1,54 @@
+CLASS Transaction
+    ATTRIBUTES:
+        txnId
+        amount
+        merchant
+        date  // format: YYYY-MM-DD
+
+CLASS WalletReport
+    METHOD groupByMerchantAndMonth(transactions)
+        result = Map<Merchant, Map<Month, List<Transaction>>>
+
+        FOR each txn in transactions
+            merchant = txn.merchant
+            month = extractMonth(txn.date)
+
+            IF merchant not in result
+                result[merchant] = new empty Map<Month, List<Transaction>>
+
+            IF month not in result[merchant]
+                result[merchant][month] = new empty List<Transaction>
+
+            result[merchant][month].add(txn)
+
+        RETURN result
+
+    METHOD generateSummary(groupedData)
+        FOR each merchant in groupedData
+            PRINT "Merchant: " + merchant
+            FOR each month in groupedData[merchant]
+                transactionsInMonth = groupedData[merchant][month]
+                totalAmount = 0
+                count = size(transactionsInMonth)
+
+                FOR each txn in transactionsInMonth
+                    totalAmount = totalAmount + txn.amount
+
+                PRINT "   Month: " + month
+                PRINT "   Total Transactions: " + count
+                PRINT "   Total Amount: " + totalAmount
+
+MAIN:
+    CREATE list transactions
+
+    t1 = new Transaction("T1", 500, "Amazon", "2025-01-12")
+    t2 = new Transaction("T2", 200, "Amazon", "2025-01-20")
+    t3 = new Transaction("T3", 1000, "Flipkart", "2025-01-15")
+    t4 = new Transaction("T4", 700, "Amazon", "2025-02-05")
+
+    ADD t1, t2, t3, t4 to transactions
+
+    report = new WalletReport()
+    grouped = report.groupByMerchantAndMonth(transactions)
+    report.generateSummary(grouped)
+END MAIN

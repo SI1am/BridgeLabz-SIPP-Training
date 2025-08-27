@@ -1,0 +1,27 @@
+CLASS Graph
+    ATTRIBUTES:
+        adjacencyList: Map<Zone, List<Zone>>
+        riskScores: Map<Zone, Integer>   // past crime data
+
+    METHOD addEdge(zoneA, zoneB)
+        adjacencyList[zoneA].add(zoneB)
+        adjacencyList[zoneB].add(zoneA)
+
+    METHOD dfs(zone, visited, totalRisk)
+        MARK zone as visited
+        totalRisk = totalRisk + riskScores[zone]
+        FOR each neighbor in adjacencyList[zone]
+            IF not visited[neighbor]
+                totalRisk = dfs(neighbor, visited, totalRisk)
+        RETURN totalRisk
+
+MAIN:
+    Create graph with zones and connections
+    For each zone:
+        visited = emptySet
+        risk = graph.dfs(zone, visited, 0)
+        PRINT "Zone:", zone, "Total Risk:", risk
+    Highlight zones with risk > threshold
+END MAIN
+END CLASS
+   

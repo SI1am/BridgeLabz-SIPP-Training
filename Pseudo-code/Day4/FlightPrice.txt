@@ -1,0 +1,42 @@
+CLASS Flight
+    ATTRIBUTES:
+        flightId
+        price
+        duration
+
+Comparator CompareFlights
+    METHOD compare(f1, f2)
+        IF f1.price != f2.price
+            RETURN f1.price - f2.price
+        ELSE
+            RETURN f1.duration - f2.duration
+
+FUNCTION mergeSort(flights[], comparator)
+    IF size <= 1
+        RETURN flights
+    mid = size/2
+    left = mergeSort(flights[0..mid], comparator)
+    right = mergeSort(flights[mid+1..end], comparator)
+    RETURN merge(left, right, comparator)
+
+FUNCTION merge(left, right, comparator)
+    result = []
+    WHILE left not empty AND right not empty
+        IF comparator.compare(left[0], right[0]) <= 0
+            ADD left[0] to result
+            REMOVE left[0]
+        ELSE
+            ADD right[0] to result
+            REMOVE right[0]
+    ADD remaining elements
+    RETURN result
+
+MAIN:
+    flights = list of Flight
+    sortedFlights = mergeSort(flights, CompareFlights)
+    DISPLAY sortedFlights
+    FOR each flight in sortedFlights
+        PRINT flight.flightId, flight.price, flight.duration
+    END FOR
+    END MAIN
+    END FUNCTION
