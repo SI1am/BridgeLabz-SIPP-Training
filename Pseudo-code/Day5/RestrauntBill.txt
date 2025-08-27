@@ -1,0 +1,70 @@
+INTERFACE TaxCalculator
+    METHOD calculateTax(amount): double
+
+CLASS FoodTax IMPLEMENTS TaxCalculator
+    METHOD calculateTax(amount)
+        RETURN amount * 0.05
+
+CLASS BeverageTax IMPLEMENTS TaxCalculator
+    METHOD calculateTax(amount)
+        RETURN amount * 0.12
+
+CLASS ImportedTax IMPLEMENTS TaxCalculator
+    METHOD calculateTax(amount)
+        RETURN amount * 0.05 + customsDuty(amount)
+
+    METHOD customsDuty(amount)
+        RETURN amount * 0.10
+
+INTERFACE DiscountPolicy
+    METHOD applyDiscount(amount): double
+
+CLASS NoDiscount IMPLEMENTS DiscountPolicy
+    METHOD applyDiscount(amount)
+        RETURN amount
+
+CLASS FlatDiscount IMPLEMENTS DiscountPolicy
+    ATTRIBUTE flatAmount = 100
+    METHOD applyDiscount(amount)
+        RETURN amount - flatAmount
+
+CLASS PercentageDiscount IMPLEMENTS DiscountPolicy
+    ATTRIBUTE percent = 10
+    METHOD applyDiscount(amount)
+        RETURN amount - (amount * percent / 100)
+
+CLASS MenuItem
+    ATTRIBUTES:
+        name
+        price
+        taxCalculator: TaxCalculator
+
+    METHOD getTotalPrice()
+        RETURN price + taxCalculator.calculateTax(price)
+
+CLASS Bill
+    ATTRIBUTES:
+        items: List<MenuItem>
+        discountPolicy: DiscountPolicy
+
+    METHOD calculateBill()
+        total = 0
+        FOR each item in items
+            total = total + item.getTotalPrice()
+        total = discountPolicy.applyDiscount(total)
+        RETURN total
+
+MAIN:
+    item1 = new MenuItem("Paneer Tikka", 200, new FoodTax())
+    item2 = new MenuItem("Coke", 50, new BeverageTax())
+    item3 = new MenuItem("Imported Cheese", 300, new ImportedTax())
+
+    bill = new Bill([item1, item2, item3], new PercentageDiscount())
+    PRINT "Final Bill: " + bill.calculateBill()
+
+    // New feature: Buy1Get1 Discount
+    CLASS Buy1Get1Discount IMPLEMENTS DiscountPolicy
+        METHOD applyDiscount(amount)
+            RETURN amount/2  // simplified logic
+
+    // New feature: LuxuryTax can be added by creating new class LuxuryTax IMPLEMENTS TaxCalculator

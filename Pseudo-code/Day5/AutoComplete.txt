@@ -1,0 +1,131 @@
+CLASS TrieNode
+    ATTRIBUTES:
+        children: Map<char, TrieNode>
+        isEnd: boolean
+        keyword: String
+        popularity: int
+        topN: MinHeap<(popularity, keyword)> with capacity N    // smallest on top
+
+CLASS AutocompleteTrie
+    ATTRIBUTES:
+        root: TrieNode
+        N: int   // number of suggestions to return
+
+    METHOD init(NSuggestions)
+        root = new TrieNode()
+        N = NSuggestions
+
+    METHOD normalize(s: String) -> String
+        s = toLowerCase(s)
+        s = trim(s)
+        // keep spaces; optionally collapse multiple spaces
+        RETURN s
+
+    METHOD insert(keyword: String, initialPopularity: int = 0)
+        k = normalize(keyword)
+        node = root
+        FOR ch IN k
+            IF ch NOT IN node.children
+                node.children[ch] = new TrieNode()
+            node = node.children[ch]
+            maintainTopN(node, k, initialPopularity)
+        node.isEnd = true
+        node.keyword = k
+        node.popularity = initialPopularity
+        // also ensure terminal node is in its own topN
+        maintainTopN(node, k, initialPopularity)
+
+    METHOD maintainTopN(node: TrieNode, kw: String, pop: int)
+        // If kw already exists in heap, we need a re-heap operation:
+        // Simplify: rebuild node.topN from a small map OR lazy policy:
+        //   remove-if-present then push
+        if contains(node.topN, kw)
+            removeEntry(node.topN, kw)
+        if size(node.topN) < N
+            push(node.topN, (pop, kw))
+        else
+            if pop > peekMin(node.topN).popularity
+                popMin(node.topN)
+                push(node.topN, (pop, kw))
+
+    METHOD updatePopularity(keyword: String, delta: int)
+        // increase/decrease popularity and repropagate
+        k = normalize(keyword)
+        node = root
+        pathNodes = empty List<TrieNode>
+        FOR ch IN k
+            IF ch NOT IN node.children
+                RETURN  // keyword not found; optionally insert instead
+            node = node.children[ch]
+            pathNodes.add(node)
+        IF NOT node.isEnd
+            RETURN    // not a terminal; ignore
+
+        node.popularity = node.popularity + delta
+
+        // Re-maintain topN on the path
+        FOR pn IN pathNodes
+            maintainTopN(pn, k, node.popularity)
+
+    METHOD search(prefix: String) -> List<String>
+        p = normalize(prefix)
+        node = root
+        FOR ch IN p
+            IF ch NOT IN node.children
+                RETURN []    // no suggestions
+            node = node.children[ch]
+        // node.topN holds best N (by popularity)
+        // Return sorted descending by popularity, then lexicographically
+        arr = toArray(node.topN)
+        sortDescending(arr by popularity, then keyword)
+        RETURN [entry.keyword for entry in arr]
+
+    // Optional: exact insertion of new restaurants live
+    METHOD addKeyword(keyword: String)
+        insert(keyword, initialPopularity=0)
+
+
+// ---------- Example Flow ----------
+MAIN:
+    trie = new AutocompleteTrie(NSuggestions=3)
+    trie.insert("pizza hut",      12)
+    trie.insert("pizza point",     9)
+    trie.insert("pita bread",      7)
+    trie.insert("pizzeria",        5)
+
+    print trie.search("pi")
+    // => ["pizza hut", "pizza point", "pita bread"]
+
+    // Popularity changes (based on orders/clicks)
+    trie.updatePopularity("pita bread", +10)
+    print trie.search("pi")
+    // => ["pita bread", "pizza hut", "pizza point"]
+
+    // Add new restaurant dynamically
+    trie.addKeyword("pineapple cafe")
+    trie.updatePopularity("pineapple cafe", +8)
+    print trie.search("pi")
+    // top-3 among: pita bread (17), pizza hut (12), pineapple cafe (8), pizza point (9)
+    // => ["pita bread", "pizza hut", "pizza point"] or if N=4 include pineapple cafe
+
+// ---------- Utilities for heap membership (implementation detail) ----------
+FUNCTION contains(heap, kw): boolean
+    // Either maintain a small HashMap<kw, nodeRef> per TrieNode to O(1) remove,
+    // or scan heap O(N) since N is small (e.g., 5–10).
+    FOR entry IN heap
+        IF entry.keyword == kw
+            RETURN true
+    RETURN false
+FUNCTION removeEntry(heap, kw)
+    // Remove entry with keyword kw from heap
+    // Either via HashMap or O(N) scan
+    temp = empty list
+    WHILE heap NOT empty
+        entry = popMin(heap)
+        IF entry.keyword != kw
+            temp.add(entry)
+    FOR e IN temp
+        push(heap, e)
+    RETURN
+END FUNCTION
+// ---------- END OF PSEUDO-CODE ----------

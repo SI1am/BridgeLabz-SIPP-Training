@@ -1,0 +1,54 @@
+
+Map<String, Map<String, List<Integer>>> energyData
+    // zone -> (day -> readings list)
+
+CLASS EnergyUsageTracker
+    ATTRIBUTES:
+        energyData: Map<String, Map<String, List<Integer>>>
+
+    METHOD init()
+        energyData = empty Map
+
+    METHOD addReading(zone: String, day: String, reading: Int)
+        IF zone NOT in energyData
+            energyData[zone] = new empty Map
+        IF day NOT in energyData[zone]
+            energyData[zone][day] = new empty List
+        energyData[zone][day].add(reading)
+
+    METHOD getPeakLoadReport() -> Map<String, Map<String, Integer>>
+        report = empty Map<zone, Map<day, peakReading>>
+        
+        FOR each zoneEntry IN energyData
+            zone = zoneEntry.key
+            dailyData = zoneEntry.value   // Map<day, List<reading>>
+            
+            report[zone] = new empty Map
+            
+            FOR each dayEntry IN dailyData
+                day = dayEntry.key
+                readings = dayEntry.value   // List<Int>
+                
+                peak = readings.stream().max()   // get max value
+                
+                report[zone][day] = peak
+
+        RETURN report
+
+// ---------- Driver Simulation ----------
+MAIN:
+    tracker = new EnergyUsageTracker()
+    tracker.addReading("Zone-A", "2025-08-01", 120)
+    tracker.addReading("Zone-A", "2025-08-01", 90)
+    tracker.addReading("Zone-A", "2025-08-01", 200)
+    tracker.addReading("Zone-A", "2025-08-01", 150)
+
+    tracker.addReading("Zone-B", "2025-08-01", 300)
+    tracker.addReading("Zone-B", "2025-08-01", 350)
+    tracker.addReading("Zone-B", "2025-08-01", 250)
+
+    report = tracker.getPeakLoadReport()
+
+    // Expected:
+    // Zone-A, Day-2025-08-01 -> 200
+    // Zone-B, Day-2025-08-01 -> 350

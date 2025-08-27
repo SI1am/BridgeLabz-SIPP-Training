@@ -1,0 +1,56 @@
+CLASS BonusDistributionEngine
+    METHOD calculateBonusDistribution(employees: List<Employee>) 
+        result = Map<String, Map<String, Double>>
+        // dept -> (employeeName -> bonusAmount)
+
+        // 1. Group employees by department
+        deptGroups = employees.stream().groupBy(e -> e.dept)
+
+        FOR each deptEntry IN deptGroups
+            dept = deptEntry.key
+            empList = deptEntry.value   // List<Employee>
+
+            // 2. Calculate total base salary in dept
+            totalSalary = empList.stream().sum(e.baseSalary)
+
+            // 3. Calculate bonus pool (10%)
+            bonusPool = totalSalary * 0.10
+
+            // 4. Calculate total performance rating sum
+            totalRating = empList.stream().sum(e.rating)
+
+            deptResult = new Map<String, Double>
+
+            // 5. Distribute bonus proportionally
+            FOR each emp IN empList
+                empShare = (emp.rating / totalRating) * bonusPool
+                deptResult[emp.name] = empShare
+
+            result[dept] = deptResult
+
+        RETURN result
+
+// ---------- Driver Simulation ----------
+MAIN:
+    employees = [
+        Employee("Emp-A", "IT", 5, 500000),
+        Employee("Emp-B", "IT", 3, 300000),
+        Employee("Emp-C", "IT", 2, 200000),
+        Employee("Emp-D", "Finance", 4, 400000),
+        Employee("Emp-E", "Finance", 1, 100000)
+    ]
+
+    engine = new BonusDistributionEngine()
+    report = engine.calculateBonusDistribution(employees)
+
+    // Expected Example Output:
+    // IT Dept (pool = 1,000,000 * 0.1 = 100,000)
+    //   Emp-A (rating 5/10) → 50,000
+    //   Emp-B (rating 3/10) → 30,000
+    //   Emp-C (rating 2/10) → 20,000
+    //
+    // Finance Dept (pool = 500,000 * 0.1 = 50,000)
+    //   Emp-D (rating 4/5) → 40,000
+    //   Emp-E (rating 1/5) → 10,000
+END MAIN
+END CLASS

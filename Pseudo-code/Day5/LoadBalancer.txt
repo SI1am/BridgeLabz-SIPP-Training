@@ -1,0 +1,69 @@
+CLASS LoadBalancer
+    ATTRIBUTES:
+        servers: Queue<String>        // e.g., ["S1","S2","S3"]
+        alive: Set<String>
+
+    METHOD init(initialServers: List<String>)
+        servers = empty Queue
+        alive = empty Set
+        FOR s IN initialServers
+            addServer(s)
+
+    METHOD addServer(s: String)
+        IF s NOT IN alive
+            servers.enqueue(s)
+            alive.add(s)
+
+    METHOD removeServer(s: String)
+        IF s NOT IN alive
+            RETURN
+        // rebuild queue without s
+        temp = empty Queue
+        WHILE servers NOT empty
+            cur = servers.dequeue()
+            IF cur != s
+                temp.enqueue(cur)
+        servers = temp
+        alive.remove(s)
+
+    METHOD getNextServer(): String
+        IF servers is empty
+            RETURN "NO_SERVER"     // or throw error
+        s = servers.dequeue()
+        servers.enqueue(s)         // round-robin
+        RETURN s
+
+    METHOD processRequests(requests: List<String>) -> List<Pair<String,String>>
+        result = empty List<Pair<requestId, serverId>>
+        FOR r IN requests
+            s = getNextServer()
+            result.add( (r, s) )
+        RETURN result
+
+// ---------- Simulation Driver ----------
+MAIN:
+    lb = new LoadBalancer()
+    lb.init(["S1", "S2", "S3"])
+
+    print lb.processRequests(["R1","R2","R3"])
+    // R1->S1, R2->S2, R3->S3
+
+    lb.addServer("S4")        // dynamic join
+    print lb.processRequests(["R4","R5"])
+    // With current queue head at "S1": R4->S1, R5->S2
+
+    lb.removeServer("S2")     // failure/offline
+    print lb.processRequests(["R6","R7","R8"])
+    // Continues round-robin over remaining: e.g., R6->S3, R7->S4, R8->S1
+
+// ---------- Optional Enhancements ----------
+METHOD processStream(events):
+    // events can be Request(rid) | AddServer(id) | RemoveServer(id)
+    FOR e IN events
+        IF e.type == "Request"
+            s = getNextServer()
+            print e.rid + " -> " + s
+        ELSE IF e.type == "AddServer"
+            addServer(e.id)
+        ELSE IF e.type == "RemoveServer"
+            removeServer(e.id)

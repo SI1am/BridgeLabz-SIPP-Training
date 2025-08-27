@@ -1,0 +1,51 @@
+INTERFACE DiagnosisStrategy
+    METHOD diagnose(symptoms: List<String>): List<String>
+
+CLASS RuleBasedDiagnosis IMPLEMENTS DiagnosisStrategy
+    METHOD diagnose(symptoms)
+        IF symptoms contain "fever" AND "cough"
+            RETURN ["Flu", "COVID-19"]
+        ELSE IF symptoms contain "fatigue"
+            RETURN ["Anemia", "Flu"]
+        ELSE
+            RETURN ["General Infection"]
+
+CLASS AIBasedDiagnosis IMPLEMENTS DiagnosisStrategy
+    METHOD diagnose(symptoms)
+        // Assume ML model or mock
+        IF symptoms contain "headache" AND "dizziness"
+            RETURN ["Migraine", "Vertigo"]
+        ELSE
+            RETURN ["Unknown - Need More Tests"]
+
+CLASS ProbabilityBasedDiagnosis IMPLEMENTS DiagnosisStrategy
+    METHOD diagnose(symptoms)
+        RETURN ["Disease A (70%)", "Disease B (30%)"]
+
+CLASS DiagnosisContext
+    ATTRIBUTE strategy: DiagnosisStrategy
+
+    METHOD setStrategy(newStrategy: DiagnosisStrategy)
+        strategy = newStrategy
+
+    METHOD executeDiagnosis(symptoms: List<String>)
+        RETURN strategy.diagnose(symptoms)
+
+MAIN:
+    context = new DiagnosisContext()
+
+    patient1Symptoms = ["fever", "cough", "fatigue"]
+    context.setStrategy(new RuleBasedDiagnosis())
+    PRINT "Patient1 Diagnosis: " + context.executeDiagnosis(patient1Symptoms)
+
+    patient2Symptoms = ["headache", "dizziness", "nausea"]
+    context.setStrategy(new AIBasedDiagnosis())
+    PRINT "Patient2 Diagnosis: " + context.executeDiagnosis(patient2Symptoms)
+
+    // Tomorrow: Add new strategy GeneticPatternDiagnosis without modifying old code
+    CLASS GeneticPatternDiagnosis IMPLEMENTS DiagnosisStrategy
+        METHOD diagnose(symptoms)
+            RETURN ["Possible Genetic Disorder"]
+
+    context.setStrategy(new GeneticPatternDiagnosis())
+    PRINT "Patient3 Diagnosis: " + context.executeDiagnosis(["muscle weakness"])
