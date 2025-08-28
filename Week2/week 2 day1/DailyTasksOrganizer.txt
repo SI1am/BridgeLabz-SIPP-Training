@@ -1,0 +1,91 @@
+CLASS DailyTasksOrganizer
+    ATTRIBUTES:
+        tasks: LinkedHashMap<Integer, String>
+        nextTaskId: Integer
+    
+    METHODS:
+        CONSTRUCTOR()
+            SET this.tasks = NEW LinkedHashMap<Integer, String>()
+            SET this.nextTaskId = 1
+        
+        addTask(taskDescription): Integer
+            taskId = nextTaskId
+            SET tasks[taskId] = taskDescription
+            SET nextTaskId = nextTaskId + 1
+            RETURN taskId
+        
+        removeTask(taskId): Boolean
+            IF tasks.containsKey(taskId) THEN
+                REMOVE taskId FROM tasks
+                RETURN true
+            ELSE
+                RETURN false
+            END IF
+        
+        updateTask(taskId, newDescription): Boolean
+            IF tasks.containsKey(taskId) THEN
+                SET tasks[taskId] = newDescription
+                RETURN true
+            ELSE
+                RETURN false
+            END IF
+        
+        getTask(taskId): String
+            IF tasks.containsKey(taskId) THEN
+                RETURN tasks[taskId]
+            ELSE
+                RETURN null
+            END IF
+        
+        getAllTasks(): LinkedHashMap<Integer, String>
+            RETURN tasks
+        
+        getPendingTasks(): LinkedHashMap<Integer, String>
+            RETURN tasks
+        
+        displayTasks()
+            IF tasks.isEmpty() THEN
+                DISPLAY "No tasks found"
+                RETURN
+            END IF
+            
+            DISPLAY "Current Tasks (in order of creation):"
+            DISPLAY "====================================="
+            
+            FOR EACH entry IN tasks.entrySet()
+                DISPLAY entry.getKey() + " → " + entry.getValue()
+            END FOR
+        
+        getTaskCount(): Integer
+            RETURN tasks.size()
+        
+        clearAllTasks()
+            tasks.clear()
+            SET nextTaskId = 1
+
+MAIN PROGRAM:
+    organizer = NEW DailyTasksOrganizer()
+    
+    task1 = organizer.addTask("Check emails")
+    task2 = organizer.addTask("Prepare sales report")
+    task3 = organizer.addTask("Call client")
+    
+    DISPLAY "Morning tasks added:"
+    organizer.displayTasks()
+    
+    organizer.removeTask(task2)
+    DISPLAY "After completing task 2:"
+    organizer.displayTasks()
+    
+    task4 = organizer.addTask("Review project proposal")
+    DISPLAY "After adding new task:"
+    organizer.displayTasks()
+    
+    organizer.updateTask(task1, "Check emails and respond to urgent ones")
+    DISPLAY "After updating task 1:"
+    organizer.displayTasks()
+    
+    DISPLAY "Total pending tasks: " + organizer.getTaskCount()
+    
+    pendingTasks = organizer.getPendingTasks()
+    DISPLAY "Pending tasks map size: " + pendingTasks.size()

@@ -1,0 +1,124 @@
+CLASS Ticket
+    ATTRIBUTES:
+        ticketId: String
+        movieName: String
+        seatNumber: String
+        price: Double
+        bookingStatus: String
+        showTime: String
+        customerName: String
+    
+    METHODS:
+        CONSTRUCTOR(movieName, seatNumber, price, showTime, customerName)
+            SET this.movieName = movieName
+            SET this.seatNumber = seatNumber
+            SET this.price = price
+            SET this.showTime = showTime
+            SET this.customerName = customerName
+            SET this.bookingStatus = "CONFIRMED"
+            SET this.ticketId = generateTicketId()
+        
+        cancelTicket()
+            SET this.bookingStatus = "CANCELLED"
+        
+        getTicketDetails(): String
+            RETURN "Ticket ID: " + ticketId + ", Movie: " + movieName + ", Seat: " + seatNumber + ", Status: " + bookingStatus
+
+CLASS Theatre
+    ATTRIBUTES:
+        theatreName: String
+        movieSchedules: Map<String, List<String>>
+        availableSeats: Map<String, List<String>>
+        bookedSeats: Map<String, List<String>>
+    
+    METHODS:
+        CONSTRUCTOR(theatreName)
+            SET this.theatreName = theatreName
+            SET this.movieSchedules = NEW Map()
+            SET this.availableSeats = NEW Map()
+            SET this.bookedSeats = NEW Map()
+        
+        addMovie(movieName, showTimes)
+            SET movieSchedules[movieName] = showTimes
+            FOR EACH showTime IN showTimes
+                SET availableSeats[movieName + "_" + showTime] = generateSeatList()
+            END FOR
+        
+        bookTicket(movieName, showTime, seatNumber, customerName): Ticket
+            IF isSeatAvailable(movieName, showTime, seatNumber) THEN
+                ticket = NEW Ticket(movieName, seatNumber, calculatePrice(seatNumber), showTime, customerName)
+                updateSeatAvailability(movieName, showTime, seatNumber, "BOOK")
+                RETURN ticket
+            ELSE
+                RETURN null
+            END IF
+        
+        cancelTicket(ticket)
+            IF ticket.bookingStatus == "CONFIRMED" THEN
+                ticket.cancelTicket()
+                updateSeatAvailability(ticket.movieName, ticket.showTime, ticket.seatNumber, "FREE")
+            END IF
+        
+        isSeatAvailable(movieName, showTime, seatNumber): Boolean
+            key = movieName + "_" + showTime
+            RETURN availableSeats[key].contains(seatNumber)
+        
+        updateSeatAvailability(movieName, showTime, seatNumber, action)
+            key = movieName + "_" + showTime
+            IF action == "BOOK" THEN
+                REMOVE seatNumber FROM availableSeats[key]
+                ADD seatNumber TO bookedSeats[key]
+            ELSE IF action == "FREE" THEN
+                ADD seatNumber TO availableSeats[key]
+                REMOVE seatNumber FROM bookedSeats[key]
+            END IF
+
+CLASS Customer
+    ATTRIBUTES:
+        customerName: String
+        bookedTickets: List<Ticket>
+    
+    METHODS:
+        CONSTRUCTOR(customerName)
+            SET this.customerName = customerName
+            SET this.bookedTickets = NEW List()
+        
+        bookTicket(theatre, movieName, showTime, seatNumber): Boolean
+            ticket = theatre.bookTicket(movieName, showTime, seatNumber, customerName)
+            IF ticket != null THEN
+                ADD ticket TO bookedTickets
+                RETURN true
+            ELSE
+                RETURN false
+            END IF
+        
+        cancelTicket(theatre, ticketId): Boolean
+            FOR EACH ticket IN bookedTickets
+                IF ticket.ticketId == ticketId THEN
+                    theatre.cancelTicket(ticket)
+                    REMOVE ticket FROM bookedTickets
+                    RETURN true
+                END IF
+            END FOR
+            RETURN false
+        
+        viewBookedTickets()
+            FOR EACH ticket IN bookedTickets
+                DISPLAY ticket.getTicketDetails()
+            END FOR
+
+MAIN PROGRAM:
+    theatre = NEW Theatre("PVR Cinemas")
+    theatre.addMovie("Avengers: Endgame", ["6:00 PM", "9:00 PM"])
+    
+    customer = NEW Customer("Ravi")
+    
+    IF customer.bookTicket(theatre, "Avengers: Endgame", "6:00 PM", "A12") THEN
+        SHOW "Ticket booked successfully"
+        customer.viewBookedTickets()
+    ELSE
+        SHOW "Booking failed"
+    END IF
+    
+    customer.cancelTicket(theatre, "TICKET_001")
+    SHOW "Ticket cancelled"

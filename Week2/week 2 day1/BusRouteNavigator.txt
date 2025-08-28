@@ -1,0 +1,116 @@
+CLASS BusStop
+    ATTRIBUTES:
+        stopName: String
+        nextStop: BusStop
+    
+    METHODS:
+        CONSTRUCTOR(stopName)
+            SET this.stopName = stopName
+            SET this.nextStop = null
+
+CLASS BusRoute
+    ATTRIBUTES:
+        head: BusStop
+        routeName: String
+    
+    METHODS:
+        CONSTRUCTOR(routeName)
+            SET this.routeName = routeName
+            SET this.head = null
+        
+        addStop(stopName)
+            newStop = NEW BusStop(stopName)
+            IF head == null THEN
+                SET head = newStop
+            ELSE
+                current = head
+                WHILE current.nextStop != null
+                    current = current.nextStop
+                END WHILE
+                SET current.nextStop = newStop
+            END IF
+        
+        insertStopAfter(stopName, newStopName)
+            current = head
+            WHILE current != null AND current.stopName != stopName
+                current = current.nextStop
+            END WHILE
+            
+            IF current != null THEN
+                newStop = NEW BusStop(newStopName)
+                SET newStop.nextStop = current.nextStop
+                SET current.nextStop = newStop
+            END IF
+        
+        removeStop(stopName)
+            IF head == null THEN
+                RETURN
+            END IF
+            
+            IF head.stopName == stopName THEN
+                SET head = head.nextStop
+                RETURN
+            END IF
+            
+            current = head
+            WHILE current.nextStop != null AND current.nextStop.stopName != stopName
+                current = current.nextStop
+            END WHILE
+            
+            IF current.nextStop != null THEN
+                SET current.nextStop = current.nextStop.nextStop
+            END IF
+        
+        searchStop(stopName): Boolean
+            current = head
+            WHILE current != null
+                IF current.stopName == stopName THEN
+                    RETURN true
+                END IF
+                current = current.nextStop
+            END WHILE
+            RETURN false
+        
+        displayRoute()
+            current = head
+            route = ""
+            WHILE current != null
+                route = route + current.stopName
+                IF current.nextStop != null THEN
+                    route = route + " → "
+                END IF
+                current = current.nextStop
+            END WHILE
+            DISPLAY route
+
+MAIN PROGRAM:
+    route = NEW BusRoute("Route 101")
+    
+    route.addStop("Depot")
+    route.addStop("Main Street")
+    route.addStop("City Mall")
+    route.addStop("Hospital")
+    route.addStop("Airport")
+    
+    DISPLAY "Initial route:"
+    route.displayRoute()
+    
+    route.insertStopAfter("City Mall", "University Stop")
+    DISPLAY "After adding University Stop:"
+    route.displayRoute()
+    
+    route.removeStop("Hospital")
+    DISPLAY "After removing Hospital:"
+    route.displayRoute()
+    
+    IF route.searchStop("Airport") THEN
+        DISPLAY "Airport is in the route"
+    ELSE
+        DISPLAY "Airport is not in the route"
+    END IF
+    
+    IF route.searchStop("Hospital") THEN
+        DISPLAY "Hospital is in the route"
+    ELSE
+        DISPLAY "Hospital is not in the route"
+    END IF

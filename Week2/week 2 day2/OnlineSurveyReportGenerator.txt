@@ -1,0 +1,212 @@
+CLASS SurveyResponse
+    ATTRIBUTES:
+        restaurantName: String
+        rating: Integer
+    
+    METHODS:
+        CONSTRUCTOR(restaurantName, rating)
+            SET this.restaurantName = restaurantName
+            SET this.rating = rating
+        
+        getRestaurantName(): String
+            RETURN restaurantName
+        
+        getRating(): Integer
+            RETURN rating
+        
+        toString(): String
+            RETURN restaurantName + " → " + rating
+
+CLASS SurveyReportGenerator
+    ATTRIBUTES:
+        surveyResponses: List<SurveyResponse>
+    
+    METHODS:
+        CONSTRUCTOR()
+            SET this.surveyResponses = NEW List<SurveyResponse>()
+        
+        addResponse(restaurantName, rating)
+            response = NEW SurveyResponse(restaurantName, rating)
+            ADD response TO surveyResponses
+        
+        addMultipleResponses(responses)
+            FOR EACH response IN responses
+                ADD response TO surveyResponses
+            END FOR
+        
+        generateAverageRatings(): Map<String, Double>
+            restaurantRatings = NEW Map<String, List<Integer>>()
+            
+            FOR EACH response IN surveyResponses
+                restaurantName = response.getRestaurantName()
+                rating = response.getRating()
+                
+                IF restaurantRatings.containsKey(restaurantName) THEN
+                    ADD rating TO restaurantRatings[restaurantName]
+                ELSE
+                    ratings = NEW List<Integer>()
+                    ADD rating TO ratings
+                    SET restaurantRatings[restaurantName] = ratings
+                END IF
+            END FOR
+            
+            averageRatings = NEW Map<String, Double>()
+            
+            FOR EACH entry IN restaurantRatings.entrySet()
+                restaurantName = entry.getKey()
+                ratings = entry.getValue()
+                
+                total = 0
+                FOR EACH rating IN ratings
+                    SET total = total + rating
+                END FOR
+                
+                average = total / ratings.size()
+                SET averageRatings[restaurantName] = average
+            END FOR
+            
+            RETURN averageRatings
+        
+        getHighestRatedRestaurant(): String
+            averageRatings = generateAverageRatings()
+            
+            IF averageRatings.isEmpty() THEN
+                RETURN null
+            END IF
+            
+            highestRated = null
+            maxRating = 0.0
+            
+            FOR EACH entry IN averageRatings.entrySet()
+                IF entry.getValue() > maxRating THEN
+                    SET maxRating = entry.getValue()
+                    SET highestRated = entry.getKey()
+                END IF
+            END FOR
+            
+            RETURN highestRated
+        
+        getLowestRatedRestaurant(): String
+            averageRatings = generateAverageRatings()
+            
+            IF averageRatings.isEmpty() THEN
+                RETURN null
+            END IF
+            
+            lowestRated = null
+            minRating = 5.0
+            
+            FOR EACH entry IN averageRatings.entrySet()
+                IF entry.getValue() < minRating THEN
+                    SET minRating = entry.getValue()
+                    SET lowestRated = entry.getKey()
+                END IF
+            END FOR
+            
+            RETURN lowestRated
+        
+        getRestaurantsNeedingImprovement(threshold): List<String>
+            averageRatings = generateAverageRatings()
+            needsImprovement = NEW List<String>()
+            
+            FOR EACH entry IN averageRatings.entrySet()
+                IF entry.getValue() < threshold THEN
+                    ADD entry.getKey() TO needsImprovement
+                END IF
+            END FOR
+            
+            RETURN needsImprovement
+        
+        generateMonthlyReport()
+            averageRatings = generateAverageRatings()
+            
+            DISPLAY "Monthly Customer Satisfaction Report"
+            DISPLAY "===================================="
+            DISPLAY ""
+            
+            FOR EACH entry IN averageRatings.entrySet()
+                restaurantName = entry.getKey()
+                averageRating = entry.getValue()
+                
+                DISPLAY "Restaurant: " + restaurantName
+                DISPLAY "Average Rating: " + averageRating
+                
+                IF averageRating >= 4.5 THEN
+                    DISPLAY "Status: EXCELLENT"
+                ELSE IF averageRating >= 4.0 THEN
+                    DISPLAY "Status: GOOD"
+                ELSE IF averageRating >= 3.5 THEN
+                    DISPLAY "Status: AVERAGE"
+                ELSE
+                    DISPLAY "Status: NEEDS IMPROVEMENT"
+                END IF
+                DISPLAY "------------------------"
+            END FOR
+        
+        displayAllResponses()
+            DISPLAY "All Survey Responses:"
+            DISPLAY "===================="
+            
+            FOR EACH response IN surveyResponses
+                DISPLAY response.toString()
+            END FOR
+        
+        getRestaurantResponseCount(restaurantName): Integer
+            count = 0
+            FOR EACH response IN surveyResponses
+                IF response.getRestaurantName() == restaurantName THEN
+                    SET count = count + 1
+                END IF
+            END FOR
+            RETURN count
+        
+        getSortedRestaurantsByRating(): List<Entry<String, Double>>
+            averageRatings = generateAverageRatings()
+            sortedEntries = NEW List<Entry<String, Double>>()
+            
+            FOR EACH entry IN averageRatings.entrySet()
+                ADD entry TO sortedEntries
+            END FOR
+            
+            SORT sortedEntries BY entry.getValue() DESCENDING
+            
+            RETURN sortedEntries
+
+MAIN PROGRAM:
+    generator = NEW SurveyReportGenerator()
+    
+    generator.addResponse("PizzaHut", 4)
+    generator.addResponse("PizzaHut", 5)
+    generator.addResponse("KFC", 3)
+    generator.addResponse("KFC", 4)
+    generator.addResponse("Subway", 5)
+    generator.addResponse("Subway", 4)
+    generator.addResponse("Subway", 5)
+    
+    generator.displayAllResponses()
+    
+    DISPLAY ""
+    averageRatings = generator.generateAverageRatings()
+    DISPLAY "Average Ratings:"
+    FOR EACH entry IN averageRatings.entrySet()
+        DISPLAY entry.getKey() + " → " + entry.getValue()
+    END FOR
+    
+    DISPLAY ""
+    DISPLAY "Analysis Results:"
+    DISPLAY "Highest rated: " + generator.getHighestRatedRestaurant()
+    DISPLAY "Lowest rated: " + generator.getLowestRatedRestaurant()
+    
+    needsImprovement = generator.getRestaurantsNeedingImprovement(4.0)
+    DISPLAY "Restaurants needing improvement: " + needsImprovement.size()
+    
+    DISPLAY ""
+    generator.generateMonthlyReport()
+    
+    sortedRestaurants = generator.getSortedRestaurantsByRating()
+    DISPLAY ""
+    DISPLAY "Restaurants ranked by rating:"
+    FOR EACH entry IN sortedRestaurants
+        DISPLAY entry.getKey() + " (" + entry.getValue() + ")"
+    END FOR
+

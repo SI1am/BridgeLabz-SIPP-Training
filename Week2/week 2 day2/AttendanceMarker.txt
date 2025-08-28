@@ -1,0 +1,180 @@
+CLASS AttendanceMarker
+    ATTRIBUTES:
+        attendanceMatrix: Array[Array[Integer]]
+        studentNames: Array[String]
+        totalStudents: Integer
+        totalDays: Integer
+        currentDay: Integer
+    
+    METHODS:
+        CONSTRUCTOR(totalStudents, totalDays)
+            SET this.totalStudents = totalStudents
+            SET this.totalDays = totalDays
+            SET this.currentDay = 1
+            SET this.attendanceMatrix = NEW Array[totalStudents][totalDays]
+            SET this.studentNames = NEW Array[totalStudents]
+            initializeMatrix()
+        
+        initializeMatrix()
+            FOR i = 0 TO totalStudents - 1
+                FOR j = 0 TO totalDays - 1
+                    SET attendanceMatrix[i][j] = 0
+                END FOR
+            END FOR
+        
+        addStudent(studentId, studentName)
+            IF studentId < totalStudents THEN
+                SET studentNames[studentId] = studentName
+            END IF
+        
+        markAttendance(studentId, day, status)
+            IF studentId < totalStudents AND day <= totalDays THEN
+                SET attendanceMatrix[studentId][day - 1] = status
+            END IF
+        
+        markDailyAttendance(attendanceData)
+            FOR EACH entry IN attendanceData
+                markAttendance(entry.studentId, currentDay, entry.status)
+            END FOR
+            SET currentDay = currentDay + 1
+        
+        getDailySummary(day): Integer
+            IF day > totalDays THEN
+                RETURN 0
+            END IF
+            
+            presentCount = 0
+            FOR studentId = 0 TO totalStudents - 1
+                IF attendanceMatrix[studentId][day - 1] == 1 THEN
+                    SET presentCount = presentCount + 1
+                END IF
+            END FOR
+            RETURN presentCount
+        
+        getStudentAttendance(studentId): Array[Integer]
+            IF studentId < totalStudents THEN
+                RETURN attendanceMatrix[studentId]
+            ELSE
+                RETURN null
+            END IF
+        
+        calculateMonthlyAttendance(studentId): Integer
+            IF studentId >= totalStudents THEN
+                RETURN 0
+            END IF
+            
+            presentCount = 0
+            FOR day = 0 TO totalDays - 1
+                IF attendanceMatrix[studentId][day] == 1 THEN
+                    SET presentCount = presentCount + 1
+                END IF
+            END FOR
+            RETURN presentCount
+        
+        getDefaulterList(): List<Integer>
+            defaulters = NEW List<Integer>()
+            threshold = totalDays * 0.75
+            
+            FOR studentId = 0 TO totalStudents - 1
+                presentDays = calculateMonthlyAttendance(studentId)
+                IF presentDays < threshold THEN
+                    ADD studentId TO defaulters
+                END IF
+            END FOR
+            
+            RETURN defaulters
+        
+        generateMonthlyReport()
+            DISPLAY "Monthly Attendance Report - Sunrise Public School"
+            DISPLAY "================================================="
+            
+            FOR studentId = 0 TO totalStudents - 1
+                IF studentNames[studentId] != null THEN
+                    presentDays = calculateMonthlyAttendance(studentId)
+                    attendancePercentage = (presentDays / totalDays) * 100
+                    
+                    DISPLAY "Student " + (studentId + 1) + ": " + studentNames[studentId]
+                    DISPLAY "Present Days: " + presentDays + "/" + totalDays
+                    DISPLAY "Attendance: " + attendancePercentage + "%"
+                    
+                    IF attendancePercentage < 75 THEN
+                        DISPLAY "Status: LOW ATTENDANCE"
+                    ELSE
+                        DISPLAY "Status: GOOD ATTENDANCE"
+                    END IF
+                    DISPLAY "------------------------"
+                END IF
+            END FOR
+        
+        displayAttendanceMatrix()
+            DISPLAY "Attendance Matrix (1=Present, 0=Absent):"
+            DISPLAY "Student\t",
+            FOR day = 1 TO totalDays
+                DISPLAY "Day" + day + "\t",
+            END FOR
+            DISPLAY ""
+            
+            FOR studentId = 0 TO totalStudents - 1
+                IF studentNames[studentId] != null THEN
+                    DISPLAY studentNames[studentId] + "\t",
+                    FOR day = 0 TO totalDays - 1
+                        DISPLAY attendanceMatrix[studentId][day] + "\t",
+                    END FOR
+                    DISPLAY ""
+                END IF
+            END FOR
+        
+        checkStudentAttendance(studentId, requiredDays): Boolean
+            presentDays = calculateMonthlyAttendance(studentId)
+            RETURN presentDays >= requiredDays
+
+MAIN PROGRAM:
+    marker = NEW AttendanceMarker(5, 5)
+    
+    marker.addStudent(0, "Student 1")
+    marker.addStudent(1, "Student 2")
+    marker.addStudent(2, "Student 3")
+    marker.addStudent(3, "Student 4")
+    marker.addStudent(4, "Student 5")
+    
+    marker.markAttendance(0, 1, 1)
+    marker.markAttendance(0, 2, 0)
+    marker.markAttendance(0, 3, 1)
+    marker.markAttendance(0, 4, 1)
+    marker.markAttendance(0, 5, 1)
+    
+    marker.markAttendance(1, 1, 1)
+    marker.markAttendance(1, 2, 1)
+    marker.markAttendance(1, 3, 1)
+    marker.markAttendance(1, 4, 0)
+    marker.markAttendance(1, 5, 1)
+    
+    marker.markAttendance(2, 1, 0)
+    marker.markAttendance(2, 2, 0)
+    marker.markAttendance(2, 3, 1)
+    marker.markAttendance(2, 4, 1)
+    marker.markAttendance(2, 5, 1)
+    
+    marker.markAttendance(3, 1, 1)
+    marker.markAttendance(3, 2, 1)
+    marker.markAttendance(3, 3, 1)
+    marker.markAttendance(3, 4, 1)
+    marker.markAttendance(3, 5, 1)
+    
+    marker.markAttendance(4, 1, 1)
+    marker.markAttendance(4, 2, 0)
+    marker.markAttendance(4, 3, 0)
+    marker.markAttendance(4, 4, 1)
+    marker.markAttendance(4, 5, 0)
+    
+    marker.displayAttendanceMatrix()
+    
+    DISPLAY ""
+    DISPLAY "Daily Summary for Day 10: " + marker.getDailySummary(10)
+    DISPLAY "Student 5 attended more than 2 days: " + marker.checkStudentAttendance(4, 2)
+    
+    defaulters = marker.getDefaulterList()
+    DISPLAY "Students with < 75% attendance: " + defaulters.size()
+    
+    marker.generateMonthlyReport()
+

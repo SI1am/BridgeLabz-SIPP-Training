@@ -1,0 +1,136 @@
+CLASS AttendanceMarker
+    ATTRIBUTES:
+        attendanceMatrix: Array[Array[String]]
+        studentNames: Array[String]
+        totalStudents: Integer
+        totalDays: Integer
+        currentDay: Integer
+    
+    METHODS:
+        CONSTRUCTOR(totalStudents, totalDays)
+            SET this.totalStudents = totalStudents
+            SET this.totalDays = totalDays
+            SET this.currentDay = 1
+            SET this.attendanceMatrix = NEW Array[totalStudents][totalDays]
+            SET this.studentNames = NEW Array[totalStudents]
+            initializeMatrix()
+        
+        initializeMatrix()
+            FOR i = 0 TO totalStudents - 1
+                FOR j = 0 TO totalDays - 1
+                    SET attendanceMatrix[i][j] = "A"
+                END FOR
+            END FOR
+        
+        addStudent(studentId, studentName)
+            IF studentId < totalStudents THEN
+                SET studentNames[studentId] = studentName
+            END IF
+        
+        markAttendance(studentId, day, status)
+            IF studentId < totalStudents AND day <= totalDays THEN
+                SET attendanceMatrix[studentId][day - 1] = status
+            END IF
+        
+        markDailyAttendance(attendanceData)
+            FOR EACH entry IN attendanceData
+                markAttendance(entry.studentId, currentDay, entry.status)
+            END FOR
+            SET currentDay = currentDay + 1
+        
+        updateAttendance(studentId, day, newStatus)
+            IF studentId < totalStudents AND day <= totalDays THEN
+                SET attendanceMatrix[studentId][day - 1] = newStatus
+            END IF
+        
+        getStudentAttendance(studentId): Array[String]
+            IF studentId < totalStudents THEN
+                RETURN attendanceMatrix[studentId]
+            ELSE
+                RETURN null
+            END IF
+        
+        calculateMonthlyAttendance(studentId): Integer
+            IF studentId >= totalStudents THEN
+                RETURN 0
+            END IF
+            
+            presentCount = 0
+            FOR day = 0 TO totalDays - 1
+                IF attendanceMatrix[studentId][day] == "P" THEN
+                    SET presentCount = presentCount + 1
+                END IF
+            END FOR
+            RETURN presentCount
+        
+        generateMonthlyReport()
+            DISPLAY "Monthly Attendance Report"
+            DISPLAY "========================"
+            
+            FOR studentId = 0 TO totalStudents - 1
+                IF studentNames[studentId] != null THEN
+                    presentDays = calculateMonthlyAttendance(studentId)
+                    attendancePercentage = (presentDays / totalDays) * 100
+                    
+                    DISPLAY "Student: " + studentNames[studentId]
+                    DISPLAY "Present Days: " + presentDays + "/" + totalDays
+                    DISPLAY "Attendance: " + attendancePercentage + "%"
+                    DISPLAY "------------------------"
+                END IF
+            END FOR
+        
+        displayAttendanceMatrix()
+            DISPLAY "Attendance Matrix:"
+            DISPLAY "Student\t",
+            FOR day = 1 TO totalDays
+                DISPLAY "Day" + day + "\t",
+            END FOR
+            DISPLAY ""
+            
+            FOR studentId = 0 TO totalStudents - 1
+                IF studentNames[studentId] != null THEN
+                    DISPLAY studentNames[studentId] + "\t",
+                    FOR day = 0 TO totalDays - 1
+                        DISPLAY attendanceMatrix[studentId][day] + "\t",
+                    END FOR
+                    DISPLAY ""
+                END IF
+            END FOR
+
+MAIN PROGRAM:
+    marker = NEW AttendanceMarker(3, 7)
+    
+    marker.addStudent(0, "Student 1")
+    marker.addStudent(1, "Student 2")
+    marker.addStudent(2, "Student 3")
+    
+    marker.markAttendance(0, 1, "P")
+    marker.markAttendance(0, 2, "P")
+    marker.markAttendance(0, 3, "A")
+    marker.markAttendance(0, 4, "P")
+    marker.markAttendance(0, 5, "P")
+    marker.markAttendance(0, 6, "P")
+    marker.markAttendance(0, 7, "A")
+    
+    marker.markAttendance(1, 1, "P")
+    marker.markAttendance(1, 2, "A")
+    marker.markAttendance(1, 3, "P")
+    marker.markAttendance(1, 4, "P")
+    marker.markAttendance(1, 5, "A")
+    marker.markAttendance(1, 6, "P")
+    marker.markAttendance(1, 7, "P")
+    
+    marker.markAttendance(2, 1, "A")
+    marker.markAttendance(2, 2, "P")
+    marker.markAttendance(2, 3, "P")
+    marker.markAttendance(2, 4, "A")
+    marker.markAttendance(2, 5, "P")
+    marker.markAttendance(2, 6, "A")
+    marker.markAttendance(2, 7, "P")
+    
+    marker.displayAttendanceMatrix()
+    
+    marker.updateAttendance(0, 3, "P")
+    DISPLAY "Updated Student 1's attendance for day 3"
+    
+    marker.generateMonthlyReport()

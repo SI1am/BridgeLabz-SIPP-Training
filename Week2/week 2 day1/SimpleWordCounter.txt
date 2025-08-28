@@ -1,0 +1,125 @@
+CLASS SimpleWordCounter
+    ATTRIBUTES:
+        wordCountMap: Map<String, Integer>
+    
+    METHODS:
+        CONSTRUCTOR()
+            SET this.wordCountMap = NEW Map<String, Integer>()
+        
+        processText(text): Map<String, Integer>
+            SET wordCountMap.clear()
+            
+            words = text.split(" ")
+            
+            FOR EACH word IN words
+                normalizedWord = normalizeWord(word)
+                IF normalizedWord.length() > 0 THEN
+                    IF wordCountMap.containsKey(normalizedWord) THEN
+                        SET wordCountMap[normalizedWord] = wordCountMap[normalizedWord] + 1
+                    ELSE
+                        SET wordCountMap[normalizedWord] = 1
+                    END IF
+                END IF
+            END FOR
+            
+            RETURN wordCountMap
+        
+        normalizeWord(word): String
+            normalized = word.toLowerCase()
+            normalized = removePunctuation(normalized)
+            RETURN normalized.trim()
+        
+        removePunctuation(word): String
+            result = ""
+            FOR EACH character IN word
+                IF isLetter(character) OR isDigit(character) THEN
+                    result = result + character
+                END IF
+            END FOR
+            RETURN result
+        
+        isLetter(character): Boolean
+            RETURN character >= 'a' AND character <= 'z' OR character >= 'A' AND character <= 'Z'
+        
+        isDigit(character): Boolean
+            RETURN character >= '0' AND character <= '9'
+        
+        getWordCount(word): Integer
+            normalizedWord = normalizeWord(word)
+            IF wordCountMap.containsKey(normalizedWord) THEN
+                RETURN wordCountMap[normalizedWord]
+            ELSE
+                RETURN 0
+            END IF
+        
+        getSortedWordCounts(): List<Entry<String, Integer>>
+            sortedEntries = NEW List<Entry<String, Integer>>()
+            
+            FOR EACH entry IN wordCountMap.entrySet()
+                ADD entry TO sortedEntries
+            END FOR
+            
+            SORT sortedEntries BY entry.getValue() DESCENDING, entry.getKey() ASCENDING
+            
+            RETURN sortedEntries
+        
+        displayWordCounts()
+            sortedCounts = getSortedWordCounts()
+            
+            DISPLAY "Word Frequency Analysis:"
+            DISPLAY "======================="
+            
+            FOR EACH entry IN sortedCounts
+                DISPLAY entry.getKey() + " → " + entry.getValue()
+            END FOR
+        
+        getTotalWords(): Integer
+            total = 0
+            FOR EACH count IN wordCountMap.values()
+                SET total = total + count
+            END FOR
+            RETURN total
+        
+        getUniqueWords(): Integer
+            RETURN wordCountMap.size()
+        
+        getMostFrequentWord(): String
+            IF wordCountMap.isEmpty() THEN
+                RETURN null
+            END IF
+            
+            mostFrequent = null
+            maxCount = 0
+            
+            FOR EACH entry IN wordCountMap.entrySet()
+                IF entry.getValue() > maxCount THEN
+                    SET maxCount = entry.getValue()
+                    SET mostFrequent = entry.getKey()
+                END IF
+            END FOR
+            
+            RETURN mostFrequent
+
+MAIN PROGRAM:
+    counter = NEW SimpleWordCounter()
+    
+    text = "The news today is about the rise in technology trends."
+    
+    counter.processText(text)
+    
+    DISPLAY "Original text: " + text
+    DISPLAY ""
+    
+    counter.displayWordCounts()
+    
+    DISPLAY ""
+    DISPLAY "Statistics:"
+    DISPLAY "Total words: " + counter.getTotalWords()
+    DISPLAY "Unique words: " + counter.getUniqueWords()
+    DISPLAY "Most frequent word: " + counter.getMostFrequentWord()
+    
+    DISPLAY ""
+    DISPLAY "Individual word counts:"
+    DISPLAY "the: " + counter.getWordCount("the")
+    DISPLAY "news: " + counter.getWordCount("news")
+    DISPLAY "technology: " + counter.getWordCount("technology")

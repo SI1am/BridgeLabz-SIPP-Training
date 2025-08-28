@@ -1,0 +1,142 @@
+CLASS Vehicle
+    ATTRIBUTES:
+        vehicleNumber: String
+        entryTime: String
+        vehicleType: String
+    
+    METHODS:
+        CONSTRUCTOR(vehicleNumber, entryTime, vehicleType)
+            SET this.vehicleNumber = vehicleNumber
+            SET this.entryTime = entryTime
+            SET this.vehicleType = vehicleType
+        
+        calculateFee(exitTime): Double
+            RETURN 0.0
+        
+        getVehicleDetails(): String
+            RETURN "Vehicle: " + vehicleType + ", Number: " + vehicleNumber + ", Entry: " + entryTime
+        
+        calculateHours(exitTime): Double
+            entryHour = parseTime(entryTime)
+            exitHour = parseTime(exitTime)
+            hours = exitHour - entryHour
+            IF hours < 0 THEN
+                SET hours = hours + 24
+            END IF
+            RETURN hours
+        
+        parseTime(timeString): Double
+            parts = timeString.split(":")
+            hour = parseInteger(parts[0])
+            minute = parseInteger(parts[1])
+            period = parts[2].substring(2)
+            
+            IF period == "PM" AND hour != 12 THEN
+                SET hour = hour + 12
+            ELSE IF period == "AM" AND hour == 12 THEN
+                SET hour = 0
+            END IF
+            
+            RETURN hour + (minute / 60.0)
+
+CLASS Car EXTENDS Vehicle
+    METHODS:
+        CONSTRUCTOR(vehicleNumber, entryTime)
+            CALL super(vehicleNumber, entryTime, "Car")
+        
+        calculateFee(exitTime): Double
+            hours = calculateHours(exitTime)
+            IF hours <= 1.0 THEN
+                RETURN 50.0
+            ELSE
+                extraHours = hours - 1.0
+                RETURN 50.0 + (extraHours * 30.0)
+            END IF
+
+CLASS Bike EXTENDS Vehicle
+    METHODS:
+        CONSTRUCTOR(vehicleNumber, entryTime)
+            CALL super(vehicleNumber, entryTime, "Bike")
+        
+        calculateFee(exitTime): Double
+            hours = calculateHours(exitTime)
+            IF hours <= 1.0 THEN
+                RETURN 20.0
+            ELSE
+                extraHours = hours - 1.0
+                RETURN 20.0 + (extraHours * 10.0)
+            END IF
+
+CLASS Truck EXTENDS Vehicle
+    METHODS:
+        CONSTRUCTOR(vehicleNumber, entryTime)
+            CALL super(vehicleNumber, entryTime, "Truck")
+        
+        calculateFee(exitTime): Double
+            hours = calculateHours(exitTime)
+            IF hours <= 1.0 THEN
+                RETURN 100.0
+            ELSE
+                extraHours = hours - 1.0
+                RETURN 100.0 + (extraHours * 50.0)
+            END IF
+
+CLASS ParkingLot
+    ATTRIBUTES:
+        parkedVehicles: Map<String, Vehicle>
+    
+    METHODS:
+        CONSTRUCTOR()
+            SET this.parkedVehicles = NEW Map<String, Vehicle>()
+        
+        vehicleEntry(vehicleType, vehicleNumber, entryTime): Vehicle
+            IF vehicleType == "Car" THEN
+                vehicle = NEW Car(vehicleNumber, entryTime)
+            ELSE IF vehicleType == "Bike" THEN
+                vehicle = NEW Bike(vehicleNumber, entryTime)
+            ELSE IF vehicleType == "Truck" THEN
+                vehicle = NEW Truck(vehicleNumber, entryTime)
+            ELSE
+                RETURN null
+            END IF
+            
+            SET parkedVehicles[vehicleNumber] = vehicle
+            DISPLAY vehicle.getVehicleDetails() + " entered parking lot"
+            RETURN vehicle
+        
+        vehicleExit(vehicleNumber, exitTime): Double
+            IF parkedVehicles.containsKey(vehicleNumber) THEN
+                vehicle = parkedVehicles[vehicleNumber]
+                fee = vehicle.calculateFee(exitTime)
+                
+                DISPLAY "=== PARKING TICKET ==="
+                DISPLAY vehicle.getVehicleDetails()
+                DISPLAY "Exit Time: " + exitTime
+                DISPLAY "Total Hours: " + vehicle.calculateHours(exitTime)
+                DISPLAY "Parking Fee: ₹" + fee
+                DISPLAY "====================="
+                
+                REMOVE vehicleNumber FROM parkedVehicles
+                RETURN fee
+            ELSE
+                DISPLAY "Vehicle not found in parking lot"
+                RETURN 0.0
+            END IF
+        
+        getParkedVehicles(): Map<String, Vehicle>
+            RETURN parkedVehicles
+
+MAIN PROGRAM:
+    parkingLot = NEW ParkingLot()
+    
+    DISPLAY "=== MORNING ENTRIES ==="
+    car1 = parkingLot.vehicleEntry("Car", "KA05AB1234", "10:00 AM")
+    bike1 = parkingLot.vehicleEntry("Bike", "KA05XY7890", "11:15 AM")
+    truck1 = parkingLot.vehicleEntry("Truck", "KA09TR5566", "09:30 AM")
+    
+    DISPLAY ""
+    DISPLAY "=== EVENING EXITS ==="
+    parkingLot.vehicleExit("KA05AB1234", "01:30 PM")
+    parkingLot.vehicleExit("KA05XY7890", "12:00 PM")
+    parkingLot.vehicleExit("KA09TR5566", "02:00 PM")
+

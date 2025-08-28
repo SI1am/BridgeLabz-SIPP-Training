@@ -1,0 +1,72 @@
+CLASS User
+    ATTRIBUTES:
+        username: String
+        password: String
+    
+    METHODS:
+        login(username, password): Boolean
+            RETURN validateCredentials(username, password)
+
+CLASS Student EXTENDS User
+    ATTRIBUTES:
+        studentId: String
+        enrolledCourses: List<String>
+    
+    METHODS:
+        login(username, password): Boolean
+            IF validateCredentials(username, password) THEN
+                IF isStudentRegistered(username) AND hasEnrolledCourses(username) THEN
+                    RETURN true
+                ELSE
+                    RETURN false
+                END IF
+            ELSE
+                RETURN false
+            END IF
+        
+        isStudentRegistered(username): Boolean
+            RETURN checkStudentDatabase(username)
+        
+        hasEnrolledCourses(username): Boolean
+            RETURN enrolledCourses.size() > 0
+
+CLASS Admin EXTENDS User
+    ATTRIBUTES:
+        adminId: String
+        privileges: List<String>
+    
+    METHODS:
+        login(username, password): Boolean
+            IF validateCredentials(username, password) THEN
+                IF isAdminStaff(username) AND hasAdminPrivileges(username) THEN
+                    RETURN true
+                ELSE
+                    RETURN false
+                END IF
+            ELSE
+                RETURN false
+            END IF
+        
+        isAdminStaff(username): Boolean
+            RETURN checkAdminDatabase(username)
+        
+        hasAdminPrivileges(username): Boolean
+            RETURN privileges.contains("exam_management")
+
+MAIN PROGRAM:
+    student = NEW Student()
+    admin = NEW Admin()
+    
+    IF student.login("john123", "password") THEN
+        SHOW "Student logged in successfully"
+        DISPLAY availableExams()
+    ELSE
+        SHOW "Student login failed"
+    END IF
+    
+    IF admin.login("admin", "adminpass") THEN
+        SHOW "Admin logged in successfully"
+        DISPLAY examManagementTools()
+    ELSE
+        SHOW "Admin login failed"
+    END IF
