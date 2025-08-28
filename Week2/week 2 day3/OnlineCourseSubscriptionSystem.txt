@@ -1,0 +1,171 @@
+CLASS Course
+    ATTRIBUTES:
+        title: String
+        duration: Integer
+        price: Double
+    
+    METHODS:
+        CONSTRUCTOR(title, duration, price)
+            SET this.title = title
+            SET this.duration = duration
+            SET this.price = price
+        
+        getTitle(): String
+            RETURN title
+        
+        getDuration(): Integer
+            RETURN duration
+        
+        getPrice(): Double
+            RETURN price
+        
+        toString(): String
+            RETURN title + " - " + duration + " weeks - ₹" + price
+
+CLASS Student
+    ATTRIBUTES:
+        name: String
+        email: String
+        enrolledCourses: List<Course>
+    
+    METHODS:
+        CONSTRUCTOR(name, email)
+            SET this.name = name
+            SET this.email = email
+            SET this.enrolledCourses = NEW List<Course>()
+        
+        getName(): String
+            RETURN name
+        
+        getEmail(): String
+            RETURN email
+        
+        enrollCourse(course): Boolean
+            IF isEnrolled(course) THEN
+                RETURN false
+            ELSE
+                ADD course TO enrolledCourses
+                RETURN true
+            END IF
+        
+        isEnrolled(course): Boolean
+            FOR EACH enrolledCourse IN enrolledCourses
+                IF enrolledCourse.getTitle() == course.getTitle() THEN
+                    RETURN true
+                END IF
+            END FOR
+            RETURN false
+        
+        viewEnrolledCourses()
+            IF enrolledCourses.isEmpty() THEN
+                DISPLAY name + " has no enrolled courses"
+                RETURN
+            END IF
+            
+            DISPLAY name + "'s Enrolled Courses:"
+            FOR i = 0 TO enrolledCourses.size() - 1
+                course = enrolledCourses[i]
+                DISPLAY (i + 1) + ". " + course.toString()
+            END FOR
+        
+        getEnrolledCourses(): List<Course>
+            RETURN enrolledCourses
+        
+        getTotalEnrollmentCost(): Double
+            total = 0.0
+            FOR EACH course IN enrolledCourses
+                SET total = total + course.getPrice()
+            END FOR
+            RETURN total
+
+CLASS EduPrime
+    ATTRIBUTES:
+        courses: List<Course>
+        students: List<Student>
+    
+    METHODS:
+        CONSTRUCTOR()
+            SET this.courses = NEW List<Course>()
+            SET this.students = NEW List<Student>()
+        
+        addCourse(title, duration, price): Course
+            course = NEW Course(title, duration, price)
+            ADD course TO courses
+            RETURN course
+        
+        addStudent(name, email): Student
+            student = NEW Student(name, email)
+            ADD student TO students
+            RETURN student
+        
+        enrollStudentInCourse(studentName, courseTitle): Boolean
+            student = findStudent(studentName)
+            course = findCourse(courseTitle)
+            
+            IF student != null AND course != null THEN
+                RETURN student.enrollCourse(course)
+            ELSE
+                RETURN false
+            END IF
+        
+        findStudent(name): Student
+            FOR EACH student IN students
+                IF student.getName() == name THEN
+                    RETURN student
+                END IF
+            END FOR
+            RETURN null
+        
+        findCourse(title): Course
+            FOR EACH course IN courses
+                IF course.getTitle() == title THEN
+                    RETURN course
+                END IF
+            END FOR
+            RETURN null
+        
+        displayAllCourses()
+            DISPLAY "Available Courses on EduPrime:"
+            DISPLAY "============================="
+            FOR i = 0 TO courses.size() - 1
+                course = courses[i]
+                DISPLAY (i + 1) + ". " + course.toString()
+            END FOR
+        
+        displayAllStudents()
+            DISPLAY "Registered Students:"
+            DISPLAY "==================="
+            FOR EACH student IN students
+                DISPLAY "Name: " + student.getName() + ", Email: " + student.getEmail()
+            END FOR
+
+MAIN PROGRAM:
+    eduPrime = NEW EduPrime()
+    
+    course1 = eduPrime.addCourse("Java Programming Basics", 6, 4999)
+    course2 = eduPrime.addCourse("Data Structures in Java", 8, 5999)
+    course3 = eduPrime.addCourse("Spring Boot for Web Development", 10, 6999)
+    
+    amit = eduPrime.addStudent("Amit", "amit@email.com")
+    priya = eduPrime.addStudent("Priya", "priya@email.com")
+    
+    eduPrime.enrollStudentInCourse("Amit", "Java Programming Basics")
+    eduPrime.enrollStudentInCourse("Amit", "Data Structures in Java")
+    
+    eduPrime.enrollStudentInCourse("Priya", "Spring Boot for Web Development")
+    eduPrime.enrollStudentInCourse("Priya", "Java Programming Basics")
+    
+    DISPLAY "=== COURSE CATALOG ==="
+    eduPrime.displayAllCourses()
+    
+    DISPLAY ""
+    DISPLAY "=== STUDENT ENROLLMENTS ==="
+    amit.viewEnrolledCourses()
+    
+    DISPLAY ""
+    priya.viewEnrolledCourses()
+    
+    DISPLAY ""
+    DISPLAY "=== ENROLLMENT SUMMARY ==="
+    DISPLAY "Amit's total enrollment cost: ₹" + amit.getTotalEnrollmentCost()
+    DISPLAY "Priya's total enrollment cost: ₹" + priya.getTotalEnrollmentCost()

@@ -1,0 +1,201 @@
+CLASS Student
+    ATTRIBUTES:
+        name: String
+        marks: Integer
+    
+    METHODS:
+        CONSTRUCTOR(name, marks)
+            SET this.name = name
+            SET this.marks = marks
+        
+        getName(): String
+            RETURN name
+        
+        getMarks(): Integer
+            RETURN marks
+        
+        toString(): String
+            RETURN name + " - " + marks
+
+CLASS RankListGenerator
+    ATTRIBUTES:
+        students: Array[Student]
+    
+    METHODS:
+        CONSTRUCTOR()
+            SET this.students = NEW Array[Student]()
+        
+        addStudent(name, marks)
+            student = NEW Student(name, marks)
+            ADD student TO students
+        
+        addMultipleStudents(studentList)
+            FOR EACH student IN studentList
+                ADD student TO students
+            END FOR
+        
+        mergeSort(start, end)
+            IF start < end THEN
+                mid = (start + end) / 2
+                mergeSort(start, mid)
+                mergeSort(mid + 1, end)
+                merge(start, mid, end)
+            END IF
+        
+        merge(start, mid, end)
+            leftSize = mid - start + 1
+            rightSize = end - mid
+            
+            leftArray = NEW Array[Student](leftSize)
+            rightArray = NEW Array[Student](rightSize)
+            
+            FOR i = 0 TO leftSize - 1
+                SET leftArray[i] = students[start + i]
+            END FOR
+            
+            FOR j = 0 TO rightSize - 1
+                SET rightArray[j] = students[mid + 1 + j]
+            END FOR
+            
+            i = 0
+            j = 0
+            k = start
+            
+            WHILE i < leftSize AND j < rightSize
+                IF compareStudents(leftArray[i], rightArray[j]) > 0 THEN
+                    SET students[k] = leftArray[i]
+                    SET i = i + 1
+                ELSE
+                    SET students[k] = rightArray[j]
+                    SET j = j + 1
+                END IF
+                SET k = k + 1
+            END WHILE
+            
+            WHILE i < leftSize
+                SET students[k] = leftArray[i]
+                SET i = i + 1
+                SET k = k + 1
+            END WHILE
+            
+            WHILE j < rightSize
+                SET students[k] = rightArray[j]
+                SET j = j + 1
+                SET k = k + 1
+            END WHILE
+        
+        compareStudents(student1, student2): Integer
+            IF student1.getMarks() != student2.getMarks() THEN
+                RETURN student2.getMarks() - student1.getMarks()
+            ELSE
+                RETURN student1.getName().compareTo(student2.getName())
+            END IF
+        
+        generateRankList(): Array[Student]
+            IF students.length > 1 THEN
+                mergeSort(0, students.length - 1)
+            END IF
+            RETURN students
+        
+        displayRankList()
+            rankList = generateRankList()
+            
+            DISPLAY "TechVille University Coding Competition - Final Rankings"
+            DISPLAY "======================================================="
+            
+            FOR i = 0 TO rankList.length - 1
+                student = rankList[i]
+                rank = i + 1
+                DISPLAY rank + ". " + student.toString()
+            END FOR
+        
+        getTopPerformers(count): Array[Student]
+            rankList = generateRankList()
+            topPerformers = NEW Array[Student](count)
+            
+            FOR i = 0 TO count - 1
+                IF i < rankList.length THEN
+                    SET topPerformers[i] = rankList[i]
+                END IF
+            END FOR
+            
+            RETURN topPerformers
+        
+        getStudentsByMarks(targetMarks): List<Student>
+            matchingStudents = NEW List<Student>()
+            
+            FOR EACH student IN students
+                IF student.getMarks() == targetMarks THEN
+                    ADD student TO matchingStudents
+                END IF
+            END FOR
+            
+            RETURN matchingStudents
+        
+        getAverageMarks(): Double
+            IF students.length == 0 THEN
+                RETURN 0.0
+            END IF
+            
+            total = 0
+            FOR EACH student IN students
+                SET total = total + student.getMarks()
+            END FOR
+            
+            RETURN total / students.length
+        
+        getStatistics()
+            rankList = generateRankList()
+            
+            DISPLAY "Competition Statistics:"
+            DISPLAY "======================"
+            DISPLAY "Total Participants: " + students.length
+            DISPLAY "Average Marks: " + getAverageMarks()
+            
+            IF students.length > 0 THEN
+                DISPLAY "Highest Score: " + rankList[0].getMarks() + " by " + rankList[0].getName()
+                DISPLAY "Lowest Score: " + rankList[students.length - 1].getMarks() + " by " + rankList[students.length - 1].getName()
+            END IF
+
+MAIN PROGRAM:
+    generator = NEW RankListGenerator()
+    
+    generator.addStudent("Amit", 92)
+    generator.addStudent("Bhavna", 92)
+    generator.addStudent("Kiran", 85)
+    generator.addStudent("Dinesh", 78)
+    generator.addStudent("Charu", 92)
+    
+    DISPLAY "=== INPUT DATA ==="
+    DISPLAY "Amit - 92"
+    DISPLAY "Bhavna - 92"
+    DISPLAY "Kiran - 85"
+    DISPLAY "Dinesh - 78"
+    DISPLAY "Charu - 92"
+    
+    DISPLAY ""
+    DISPLAY "=== MERGE SORT PROCESS ==="
+    DISPLAY "Step 1: Divide list into smaller sublists"
+    DISPLAY "Step 2: Merge while comparing marks (higher first)"
+    DISPLAY "Step 3: If marks equal, compare names alphabetically"
+    
+    DISPLAY ""
+    DISPLAY "=== FINAL RANKINGS ==="
+    generator.displayRankList()
+    
+    DISPLAY ""
+    top3 = generator.getTopPerformers(3)
+    DISPLAY "Top 3 Performers:"
+    FOR i = 0 TO top3.length - 1
+        DISPLAY (i + 1) + ". " + top3[i].toString()
+    END FOR
+    
+    DISPLAY ""
+    studentsWith92 = generator.getStudentsByMarks(92)
+    DISPLAY "Students with 92 marks: " + studentsWith92.size()
+    FOR EACH student IN studentsWith92
+        DISPLAY "- " + student.getName()
+    END FOR
+    
+    DISPLAY ""
+    generator.getStatistics()

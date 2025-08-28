@@ -1,0 +1,172 @@
+CLASS Room
+    ATTRIBUTES:
+        roomNumber: String
+        customerName: String
+        daysStayed: Integer
+        roomType: String
+    
+    METHODS:
+        CONSTRUCTOR(roomNumber, customerName, daysStayed, roomType)
+            SET this.roomNumber = roomNumber
+            SET this.customerName = customerName
+            SET this.daysStayed = daysStayed
+            SET this.roomType = roomType
+        
+        calculateBill(): Double
+            RETURN 0.0
+        
+        getRoomDetails(): String
+            RETURN "Room Type: " + roomType + ", Room Number: " + roomNumber + ", Customer: " + customerName + ", Nights: " + daysStayed
+        
+        getRoomNumber(): String
+            RETURN roomNumber
+        
+        getCustomerName(): String
+            RETURN customerName
+        
+        getDaysStayed(): Integer
+            RETURN daysStayed
+        
+        getRoomType(): String
+            RETURN roomType
+
+CLASS DeluxeRoom EXTENDS Room
+    ATTRIBUTES:
+        ratePerNight: Double
+    
+    METHODS:
+        CONSTRUCTOR(roomNumber, customerName, daysStayed)
+            CALL super(roomNumber, customerName, daysStayed, "Deluxe")
+            SET this.ratePerNight = 3000.0
+        
+        calculateBill(): Double
+            RETURN daysStayed * ratePerNight
+        
+        getRatePerNight(): Double
+            RETURN ratePerNight
+
+CLASS SuiteRoom EXTENDS Room
+    ATTRIBUTES:
+        ratePerNight: Double
+    
+    METHODS:
+        CONSTRUCTOR(roomNumber, customerName, daysStayed)
+            CALL super(roomNumber, customerName, daysStayed, "Suite")
+            SET this.ratePerNight = 5000.0
+        
+        calculateBill(): Double
+            RETURN daysStayed * ratePerNight
+        
+        getRatePerNight(): Double
+            RETURN ratePerNight
+
+CLASS Customer
+    ATTRIBUTES:
+        name: String
+        phoneNumber: String
+    
+    METHODS:
+        CONSTRUCTOR(name, phoneNumber)
+            SET this.name = name
+            SET this.phoneNumber = phoneNumber
+        
+        getName(): String
+            RETURN name
+        
+        getPhoneNumber(): String
+            RETURN phoneNumber
+
+CLASS Hotel
+    ATTRIBUTES:
+        hotelName: String
+        rooms: Map<String, Room>
+        nextRoomNumber: Integer
+    
+    METHODS:
+        CONSTRUCTOR(hotelName)
+            SET this.hotelName = hotelName
+            SET this.rooms = NEW Map<String, Room>()
+            SET this.nextRoomNumber = 101
+        
+        bookRoom(customer, roomType, daysStayed): Room
+            roomNumber = generateRoomNumber()
+            
+            IF roomType == "Deluxe" THEN
+                room = NEW DeluxeRoom(roomNumber, customer.getName(), daysStayed)
+            ELSE IF roomType == "Suite" THEN
+                room = NEW SuiteRoom(roomNumber, customer.getName(), daysStayed)
+            ELSE
+                RETURN null
+            END IF
+            
+            SET rooms[roomNumber] = room
+            RETURN room
+        
+        generateRoomNumber(): String
+            roomNumber = "R" + nextRoomNumber
+            SET nextRoomNumber = nextRoomNumber + 1
+            RETURN roomNumber
+        
+        checkout(roomNumber): Double
+            IF rooms.containsKey(roomNumber) THEN
+                room = rooms[roomNumber]
+                bill = room.calculateBill()
+                
+                DISPLAY "=== HOTEL INVOICE ==="
+                DISPLAY "Hotel: " + hotelName
+                DISPLAY room.getRoomDetails()
+                DISPLAY "Total Bill: ₹" + bill
+                DISPLAY "====================="
+                
+                REMOVE roomNumber FROM rooms
+                RETURN bill
+            ELSE
+                DISPLAY "Room not found"
+                RETURN 0.0
+            END IF
+        
+        getRoom(roomNumber): Room
+            IF rooms.containsKey(roomNumber) THEN
+                RETURN rooms[roomNumber]
+            ELSE
+                RETURN null
+            END IF
+        
+        displayAllBookings()
+            IF rooms.isEmpty() THEN
+                DISPLAY "No active bookings"
+                RETURN
+            END IF
+            
+            DISPLAY "Active Bookings in " + hotelName + ":"
+            DISPLAY "================================="
+            FOR EACH entry IN rooms.entrySet()
+                room = entry.getValue()
+                DISPLAY room.getRoomDetails()
+                DISPLAY "Estimated Bill: ₹" + room.calculateBill()
+                DISPLAY "------------------------"
+            END FOR
+
+MAIN PROGRAM:
+    hotel = NEW Hotel("Sunrise Grand Hotel")
+    
+    ravi = NEW Customer("Ravi", "9876543210")
+    anita = NEW Customer("Anita", "9876543211")
+    
+    raviRoom = hotel.bookRoom(ravi, "Deluxe", 3)
+    anitaRoom = hotel.bookRoom(anita, "Suite", 2)
+    
+    DISPLAY "=== BOOKING CONFIRMATIONS ==="
+    DISPLAY "Ravi's booking: " + raviRoom.getRoomDetails()
+    DISPLAY "Anita's booking: " + anitaRoom.getRoomDetails()
+    
+    DISPLAY ""
+    hotel.displayAllBookings()
+    
+    DISPLAY ""
+    DISPLAY "=== CHECKOUT PROCESS ==="
+    hotel.checkout(raviRoom.getRoomNumber())
+    hotel.checkout(anitaRoom.getRoomNumber())
+    
+    DISPLAY ""
+    hotel.displayAllBookings()

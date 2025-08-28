@@ -1,0 +1,197 @@
+CLASS Doctor
+    ATTRIBUTES:
+        name: String
+        specialization: String
+        experienceYears: Integer
+    
+    METHODS:
+        CONSTRUCTOR(name, specialization, experienceYears)
+            SET this.name = name
+            SET this.specialization = specialization
+            SET this.experienceYears = experienceYears
+        
+        getName(): String
+            RETURN name
+        
+        getSpecialization(): String
+            RETURN specialization
+        
+        getExperienceYears(): Integer
+            RETURN experienceYears
+        
+        toString(): String
+            RETURN name + " - " + specialization + " (" + experienceYears + " years)"
+
+CLASS DepartmentDirectory
+    ATTRIBUTES:
+        departmentMap: Map<String, List<Doctor>>
+    
+    METHODS:
+        CONSTRUCTOR()
+            SET this.departmentMap = NEW Map<String, List<Doctor>>()
+            initializeDepartments()
+        
+        initializeDepartments()
+            SET departmentMap["Cardiology"] = NEW List<Doctor>()
+            SET departmentMap["Neurology"] = NEW List<Doctor>()
+            SET departmentMap["Pediatrics"] = NEW List<Doctor>()
+            SET departmentMap["Orthopedics"] = NEW List<Doctor>()
+        
+        addDoctor(department, doctor)
+            IF departmentMap.containsKey(department) THEN
+                ADD doctor TO departmentMap[department]
+                RETURN true
+            ELSE
+                RETURN false
+            END IF
+        
+        addDoctorToDepartment(department, name, specialization, experienceYears): Boolean
+            doctor = NEW Doctor(name, specialization, experienceYears)
+            RETURN addDoctor(department, doctor)
+        
+        getDoctorsByDepartment(department): List<Doctor>
+            IF departmentMap.containsKey(department) THEN
+                RETURN departmentMap[department]
+            ELSE
+                RETURN NEW List<Doctor>()
+            END IF
+        
+        displayDoctorsByDepartment(department)
+            doctors = getDoctorsByDepartment(department)
+            
+            IF doctors.isEmpty() THEN
+                DISPLAY "No doctors found in " + department + " department"
+                RETURN
+            END IF
+            
+            DISPLAY "Doctors in " + department + " Department:"
+            DISPLAY "====================================="
+            FOR i = 0 TO doctors.size() - 1
+                doctor = doctors[i]
+                DISPLAY (i + 1) + ". " + doctor.toString()
+            END FOR
+        
+        addDepartment(departmentName): Boolean
+            IF departmentMap.containsKey(departmentName) THEN
+                RETURN false
+            ELSE
+                SET departmentMap[departmentName] = NEW List<Doctor>()
+                RETURN true
+            END IF
+        
+        removeDoctor(department, doctorName): Boolean
+            IF departmentMap.containsKey(department) THEN
+                doctors = departmentMap[department]
+                FOR i = 0 TO doctors.size() - 1
+                    IF doctors[i].getName() == doctorName THEN
+                        REMOVE doctors[i] FROM doctors
+                        RETURN true
+                    END IF
+                END FOR
+            END IF
+            RETURN false
+        
+        getDoctorsByExperience(minExperience): List<Doctor>
+            experiencedDoctors = NEW List<Doctor>()
+            
+            FOR EACH entry IN departmentMap.entrySet()
+                doctors = entry.getValue()
+                FOR EACH doctor IN doctors
+                    IF doctor.getExperienceYears() >= minExperience THEN
+                        ADD doctor TO experiencedDoctors
+                    END IF
+                END FOR
+            END FOR
+            
+            RETURN experiencedDoctors
+        
+        getDepartmentStatistics()
+            DISPLAY "Hospital Department Statistics:"
+            DISPLAY "============================="
+            
+            FOR EACH entry IN departmentMap.entrySet()
+                department = entry.getKey()
+                doctors = entry.getValue()
+                DISPLAY department + ": " + doctors.size() + " doctors"
+            END FOR
+        
+        displayAllDepartments()
+            DISPLAY "Available Departments:"
+            DISPLAY "====================="
+            FOR EACH department IN departmentMap.keySet()
+                doctorCount = departmentMap[department].size()
+                DISPLAY department + " (" + doctorCount + " doctors)"
+            END FOR
+        
+        searchDoctorByName(doctorName): Doctor
+            FOR EACH entry IN departmentMap.entrySet()
+                doctors = entry.getValue()
+                FOR EACH doctor IN doctors
+                    IF doctor.getName() == doctorName THEN
+                        RETURN doctor
+                    END IF
+                END FOR
+            END FOR
+            RETURN null
+        
+        getTotalDoctors(): Integer
+            total = 0
+            FOR EACH entry IN departmentMap.entrySet()
+                SET total = total + entry.getValue().size()
+            END FOR
+            RETURN total
+
+MAIN PROGRAM:
+    directory = NEW DepartmentDirectory()
+    
+    directory.addDoctorToDepartment("Cardiology", "Dr. Mehta", "Cardiologist", 15)
+    directory.addDoctorToDepartment("Cardiology", "Dr. Kapoor", "Cardiologist", 10)
+    
+    directory.addDoctorToDepartment("Neurology", "Dr. Sharma", "Neurologist", 10)
+    directory.addDoctorToDepartment("Neurology", "Dr. Das", "Neurologist", 8)
+    
+    directory.addDoctorToDepartment("Pediatrics", "Dr. Ritu", "Pediatrician", 12)
+    directory.addDoctorToDepartment("Pediatrics", "Dr. Anjali", "Pediatrician", 7)
+    
+    directory.addDoctorToDepartment("Orthopedics", "Dr. Kumar", "Orthopedic Surgeon", 20)
+    
+    DISPLAY "=== APOLLO INTERNATIONAL HOSPITAL ==="
+    directory.displayAllDepartments()
+    
+    DISPLAY ""
+    DISPLAY "=== QUERYING DOCTORS BY DEPARTMENT ==="
+    directory.displayDoctorsByDepartment("Neurology")
+    
+    DISPLAY ""
+    directory.displayDoctorsByDepartment("Cardiology")
+    
+    DISPLAY ""
+    DISPLAY "=== ADDING NEW DEPARTMENT ==="
+    IF directory.addDepartment("Dermatology") THEN
+        directory.addDoctorToDepartment("Dermatology", "Dr. Patel", "Dermatologist", 9)
+        DISPLAY "Dermatology department added with Dr. Patel"
+        directory.displayDoctorsByDepartment("Dermatology")
+    END IF
+    
+    DISPLAY ""
+    DISPLAY "=== EXPERIENCED DOCTORS (10+ years) ==="
+    experiencedDoctors = directory.getDoctorsByExperience(10)
+    DISPLAY "Doctors with 10+ years experience: " + experiencedDoctors.size()
+    FOR EACH doctor IN experiencedDoctors
+        DISPLAY "- " + doctor.toString()
+    END FOR
+    
+    DISPLAY ""
+    directory.getDepartmentStatistics()
+    
+    DISPLAY ""
+    DISPLAY "=== SEARCHING FOR DOCTOR ==="
+    doctor = directory.searchDoctorByName("Dr. Mehta")
+    IF doctor != null THEN
+        DISPLAY "Found: " + doctor.toString()
+    ELSE
+        DISPLAY "Doctor not found"
+    END IF
+    
+    DISPLAY ""
+    DISPLAY "Total doctors in hospital: " + directory.getTotalDoctors()

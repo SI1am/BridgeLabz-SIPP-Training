@@ -1,0 +1,212 @@
+CLASS UPI
+    ATTRIBUTES:
+        upiId: String
+        amount: Double
+        merchantName: String
+    
+    METHODS:
+        CONSTRUCTOR(upiId, amount, merchantName)
+            SET this.upiId = upiId
+            SET this.amount = amount
+            SET this.merchantName = merchantName
+        
+        getUpiId(): String
+            RETURN upiId
+        
+        getAmount(): Double
+            RETURN amount
+        
+        getMerchantName(): String
+            RETURN merchantName
+        
+        toString(): String
+            RETURN "UPI ID: " + upiId + ", Amount: ₹" + amount + ", Merchant: " + merchantName
+
+CLASS Card
+    ATTRIBUTES:
+        cardNumber: String
+        cvv: String
+        expiryDate: String
+        amount: Double
+    
+    METHODS:
+        CONSTRUCTOR(cardNumber, cvv, expiryDate, amount)
+            SET this.cardNumber = cardNumber
+            SET this.cvv = cvv
+            SET this.expiryDate = expiryDate
+            SET this.amount = amount
+        
+        getCardNumber(): String
+            RETURN cardNumber
+        
+        getCvv(): String
+            RETURN cvv
+        
+        getExpiryDate(): String
+            RETURN expiryDate
+        
+        getAmount(): Double
+            RETURN amount
+        
+        getMaskedCardNumber(): String
+            IF cardNumber.length() >= 4 THEN
+                RETURN "****-****-****-" + cardNumber.substring(cardNumber.length() - 4)
+            ELSE
+                RETURN cardNumber
+            END IF
+        
+        toString(): String
+            RETURN "Card: " + getMaskedCardNumber() + ", Amount: ₹" + amount
+
+CLASS NetBanking
+    ATTRIBUTES:
+        bankName: String
+        accountNumber: String
+        amount: Double
+    
+    METHODS:
+        CONSTRUCTOR(bankName, accountNumber, amount)
+            SET this.bankName = bankName
+            SET this.accountNumber = accountNumber
+            SET this.amount = amount
+        
+        getBankName(): String
+            RETURN bankName
+        
+        getAccountNumber(): String
+            RETURN accountNumber
+        
+        getAmount(): Double
+            RETURN amount
+        
+        getMaskedAccountNumber(): String
+            IF accountNumber.length() >= 4 THEN
+                RETURN "****" + accountNumber.substring(accountNumber.length() - 4)
+            ELSE
+                RETURN accountNumber
+            END IF
+        
+        toString(): String
+            RETURN "Bank: " + bankName + ", Account: " + getMaskedAccountNumber() + ", Amount: ₹" + amount
+
+CLASS Transaction<T>
+    ATTRIBUTES:
+        paymentMethod: T
+        transactionId: String
+        timestamp: String
+    
+    METHODS:
+        CONSTRUCTOR(paymentMethod)
+            SET this.paymentMethod = paymentMethod
+            SET this.transactionId = generateTransactionId()
+            SET this.timestamp = getCurrentTimestamp()
+        
+        getPaymentMethod(): T
+            RETURN paymentMethod
+        
+        getTransactionId(): String
+            RETURN transactionId
+        
+        getTimestamp(): String
+            RETURN timestamp
+        
+        processPayment(): String
+            IF paymentMethod instanceof UPI THEN
+                upi = (UPI) paymentMethod
+                RETURN "Payment of ₹" + upi.getAmount() + " via UPI successful for " + upi.getMerchantName()
+            ELSE IF paymentMethod instanceof Card THEN
+                card = (Card) paymentMethod
+                RETURN "Payment of ₹" + card.getAmount() + " via Card ending " + card.getCardNumber().substring(card.getCardNumber().length() - 4) + " successful"
+            ELSE IF paymentMethod instanceof NetBanking THEN
+                netBanking = (NetBanking) paymentMethod
+                RETURN "Payment of ₹" + netBanking.getAmount() + " via NetBanking (" + netBanking.getBankName() + ") successful"
+            ELSE
+                RETURN "Unknown payment method"
+            END IF
+        
+        getTransactionDetails(): String
+            details = "Transaction ID: " + transactionId + "\n"
+            details = details + "Timestamp: " + timestamp + "\n"
+            details = details + "Payment Method: " + paymentMethod.toString()
+            RETURN details
+        
+        generateTransactionId(): String
+            RETURN "TXN" + getCurrentTimestamp().replaceAll("[^0-9]", "")
+        
+        getCurrentTimestamp(): String
+            RETURN "2024-01-15 14:30:00"
+
+CLASS PaymentGateway
+    ATTRIBUTES:
+        transactions: List<Transaction>
+    
+    METHODS:
+        CONSTRUCTOR()
+            SET this.transactions = NEW List<Transaction>()
+        
+        processTransaction<T>(transaction): String
+            ADD transaction TO transactions
+            result = transaction.processPayment()
+            DISPLAY "Processing Payment..."
+            DISPLAY result
+            RETURN result
+        
+        processUPIPayment(upiId, amount, merchantName): String
+            upi = NEW UPI(upiId, amount, merchantName)
+            transaction = NEW Transaction<UPI>(upi)
+            RETURN processTransaction(transaction)
+        
+        processCardPayment(cardNumber, cvv, expiryDate, amount): String
+            card = NEW Card(cardNumber, cvv, expiryDate, amount)
+            transaction = NEW Transaction<Card>(card)
+            RETURN processTransaction(transaction)
+        
+        processNetBankingPayment(bankName, accountNumber, amount): String
+            netBanking = NEW NetBanking(bankName, accountNumber, amount)
+            transaction = NEW Transaction<NetBanking>(netBanking)
+            RETURN processTransaction(transaction)
+        
+        getTransactionHistory(): List<Transaction>
+            RETURN transactions
+        
+        displayTransactionHistory()
+            IF transactions.isEmpty() THEN
+                DISPLAY "No transactions found"
+                RETURN
+            END IF
+            
+            DISPLAY "Transaction History:"
+            DISPLAY "==================="
+            FOR i = 0 TO transactions.size() - 1
+                transaction = transactions[i]
+                DISPLAY "Transaction " + (i + 1) + ":"
+                DISPLAY transaction.getTransactionDetails()
+                DISPLAY "------------------------"
+            END FOR
+        
+        getTotalTransactions(): Integer
+            RETURN transactions.size()
+
+MAIN PROGRAM:
+    gateway = NEW PaymentGateway()
+    
+    DISPLAY "=== PAYMENT GATEWAY PROCESSOR ==="
+    
+    DISPLAY ""
+    DISPLAY "=== UPI PAYMENT ==="
+    gateway.processUPIPayment("ramesh@upi", 1200, "Amazon")
+    
+    DISPLAY ""
+    DISPLAY "=== CARD PAYMENT ==="
+    gateway.processCardPayment("1234-5678-9876-5432", "123", "12/27", 5000)
+    
+    DISPLAY ""
+    DISPLAY "=== NETBANKING PAYMENT ==="
+    gateway.processNetBankingPayment("HDFC", "00112233", 8000)
+    
+    DISPLAY ""
+    DISPLAY "=== TRANSACTION HISTORY ==="
+    gateway.displayTransactionHistory()
+    
+    DISPLAY ""
+    DISPLAY "Total transactions processed: " + gateway.getTotalTransactions()

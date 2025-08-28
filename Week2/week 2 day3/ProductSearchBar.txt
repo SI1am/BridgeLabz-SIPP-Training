@@ -1,0 +1,160 @@
+CLASS ProductSearchBar
+    ATTRIBUTES:
+        productCatalog: Array[String]
+        productCategories: Map<String, String>
+        productPrices: Map<String, Double]
+    
+    METHODS:
+        CONSTRUCTOR()
+            SET this.productCatalog = NEW Array[String]()
+            SET this.productCategories = NEW Map<String, String>()
+            SET this.productPrices = NEW Map<String, Double>()
+            initializeCatalog()
+        
+        initializeCatalog()
+            SET productCatalog = ["AirPods", "Backpack", "Camera", "Laptop", "Shoes", "Smartphone", "Watch"]
+            
+            SET productCategories["AirPods"] = "Electronics"
+            SET productCategories["Backpack"] = "Fashion"
+            SET productCategories["Camera"] = "Electronics"
+            SET productCategories["Laptop"] = "Electronics"
+            SET productCategories["Shoes"] = "Fashion"
+            SET productCategories["Smartphone"] = "Electronics"
+            SET productCategories["Watch"] = "Fashion"
+            
+            SET productPrices["AirPods"] = 15000.0
+            SET productPrices["Backpack"] = 2000.0
+            SET productPrices["Camera"] = 25000.0
+            SET productPrices["Laptop"] = 45000.0
+            SET productPrices["Shoes"] = 3000.0
+            SET productPrices["Smartphone"] = 35000.0
+            SET productPrices["Watch"] = 8000.0
+        
+        binarySearch(productName): Integer
+            left = 0
+            right = productCatalog.length - 1
+            
+            WHILE left <= right
+                mid = (left + right) / 2
+                
+                IF productCatalog[mid] == productName THEN
+                    RETURN mid
+                ELSE IF productCatalog[mid].compareTo(productName) < 0 THEN
+                    SET left = mid + 1
+                ELSE
+                    SET right = mid - 1
+                END IF
+            END WHILE
+            
+            RETURN -1
+        
+        searchProduct(productName): Boolean
+            index = binarySearch(productName)
+            
+            IF index != -1 THEN
+                category = productCategories[productName]
+                price = productPrices[productName]
+                DISPLAY productName + " available in " + category + " category"
+                DISPLAY "Price: ₹" + price
+                RETURN true
+            ELSE
+                DISPLAY "Sorry, " + productName + " are currently out of stock."
+                RETURN false
+            END IF
+        
+        searchProductWithDetails(productName): Map<String, Object>
+            result = NEW Map<String, Object>()
+            index = binarySearch(productName)
+            
+            IF index != -1 THEN
+                SET result["found"] = true
+                SET result["productName"] = productName
+                SET result["category"] = productCategories[productName]
+                SET result["price"] = productPrices[productName]
+                SET result["index"] = index
+            ELSE
+                SET result["found"] = false
+                SET result["productName"] = productName
+            END IF
+            
+            RETURN result
+        
+        displayAllProducts()
+            DISPLAY "ShopEase Product Catalog:"
+            DISPLAY "========================="
+            FOR i = 0 TO productCatalog.length - 1
+                product = productCatalog[i]
+                category = productCategories[product]
+                price = productPrices[product]
+                DISPLAY (i + 1) + ". " + product + " - " + category + " - ₹" + price
+            END FOR
+        
+        getProductsByCategory(category): List<String>
+            products = NEW List<String>()
+            
+            FOR EACH product IN productCatalog
+                IF productCategories[product] == category THEN
+                    ADD product TO products
+                END IF
+            END FOR
+            
+            RETURN products
+        
+        addProduct(productName, category, price): Boolean
+            IF binarySearch(productName) != -1 THEN
+                RETURN false
+            END IF
+            
+            ADD productName TO productCatalog
+            SET productCategories[productName] = category
+            SET productPrices[productName] = price
+            
+            sortCatalog()
+            RETURN true
+        
+        sortCatalog()
+            SORT productCatalog ASCENDING
+        
+        getCatalogSize(): Integer
+            RETURN productCatalog.length
+
+MAIN PROGRAM:
+    searchBar = NEW ProductSearchBar()
+    
+    DISPLAY "=== SHOPEASE PRODUCT SEARCH ==="
+    searchBar.displayAllProducts()
+    
+    DISPLAY ""
+    DISPLAY "=== SEARCH EXAMPLES ==="
+    
+    searchBar.searchProduct("Laptop")
+    
+    DISPLAY ""
+    searchBar.searchProduct("Headphones")
+    
+    DISPLAY ""
+    searchBar.searchProduct("Shoes")
+    
+    DISPLAY ""
+    DISPLAY "=== SEARCH WITH DETAILS ==="
+    result1 = searchBar.searchProductWithDetails("Smartphone")
+    IF result1["found"] THEN
+        DISPLAY "Found: " + result1["productName"] + " in " + result1["category"] + " for ₹" + result1["price"]
+    END IF
+    
+    DISPLAY ""
+    DISPLAY "=== PRODUCTS BY CATEGORY ==="
+    electronics = searchBar.getProductsByCategory("Electronics")
+    DISPLAY "Electronics products: " + electronics.size()
+    FOR EACH product IN electronics
+        DISPLAY "- " + product
+    END FOR
+    
+    DISPLAY ""
+    DISPLAY "=== ADDING NEW PRODUCT ==="
+    IF searchBar.addProduct("Tablet", "Electronics", 18000.0) THEN
+        DISPLAY "Tablet added successfully"
+        searchBar.displayAllProducts()
+    ELSE
+        DISPLAY "Product already exists"
+    END IF
