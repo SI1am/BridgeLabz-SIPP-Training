@@ -1,4 +1,4 @@
-package Encapsulation_Abstraction_Polymorphism.EmployeeManagement;
+// package Encapsulation_Abstraction_Polymorphism.EmployeeManagement;
 // Department Interface
 interface Department {
     void assignDepartment(String deptName);
